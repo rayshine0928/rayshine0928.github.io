@@ -1,14 +1,11 @@
 # Site settings
-title: RAYSHINE0928
-email: rayshine0928@outlook.com
-description: > # this means to ignore newlines until "baseurl:"
-  Integrating AI into the details of life.
-baseurl: "" # the subpath of your site, e.g. /blog/
-url: "http://www.0928.love" # the base hostname & protocol for your site
+title: 0928.love
+email: wedding@0928.love
+description: > # 我们的婚礼网站
+  我们结婚了！2026年9月28日，杭州西湖 · 六通宾馆。
+baseurl: ""
+url: "https://www.0928.love"
 repository: rayshine0928/rayshine0928.github.io
-
-twitter_username:
-github_username: rayshine0928
 
 # Build settings
 markdown: kramdown

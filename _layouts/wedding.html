@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>We're Getting Married — 2026.09.28</title>
+    <meta name="description" content="我们结婚了！2026年9月28日，杭州西湖 · 六通宾馆。期待您的见证与祝福。">
+    <meta property="og:title" content="我们的婚礼 — 2026.09.28">
+    <meta property="og:description" content="诚挚邀请您参加我们的婚礼，杭州西湖 · 六通宾馆">
+    <meta property="og:url" content="https://www.0928.love">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ '/css/wedding.css' | relative_url }}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav-inner">
+            <a href="#hero" class="nav-logo">0928</a>
+            <ul class="nav-links">
+                <li><a href="#invitation">请柬</a></li>
+                <li><a href="#story">故事</a></li>
+                <li><a href="#schedule">流程</a></li>
+                <li><a href="#venue">场地</a></li>
+                <li><a href="#gallery">瞬间</a></li>
+                <li><a href="#rsvp">回执</a></li>
+            </ul>
+            <button class="nav-toggle" id="navToggle" aria-label="菜单">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    {{ content }}
+
+    <script src="{{ '/js/wedding.js' | relative_url }}"></script>
+</body>
+</html>
