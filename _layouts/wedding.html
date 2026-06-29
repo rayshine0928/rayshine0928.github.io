@@ -7,14 +7,18 @@
     <meta name="description" content="我们结婚了！2026年9月28日，杭州西湖 · 六通宾馆。期待您的见证与祝福。">
     <meta property="og:title" content="我们的婚礼 — 2026.09.28">
     <meta property="og:description" content="诚挚邀请您参加我们的婚礼，杭州西湖 · 六通宾馆">
-    <meta property="og:url" content="https://www.0928.love">
+    <meta property="og:url" content="https://0928.love">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="{{ '/css/wedding.css' | relative_url }}">
+    <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js" defer></script>
 </head>
 <body>
+    <!-- Shared Three.js background — spans entire page -->
+    <div id="threeBg" class="three-bg"></div>
+
     <!-- Navigation -->
     <nav class="nav" id="nav">
         <div class="nav-inner">
@@ -36,5 +40,6 @@
     {{ content }}
 
     <script src="{{ '/js/wedding.js' | relative_url }}"></script>
+    <script src="{{ '/js/wedding-three.js' | relative_url }}"></script>
 </body>
 </html>

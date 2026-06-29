@@ -248,6 +248,22 @@
     updateNavState();
 
     /* ========================================================
+       THREE.JS FADE ON SCROLL
+       ======================================================== */
+    const threeBg = document.getElementById('threeBg');
+    if (threeBg) {
+        window.addEventListener('scroll', () => {
+            const scrollY = window.pageYOffset;
+            const vh = window.innerHeight;
+            if (scrollY > vh * 0.5) {
+                threeBg.classList.add('faded');
+            } else {
+                threeBg.classList.remove('faded');
+            }
+        }, { passive: true });
+    }
+
+    /* ========================================================
        SMOOTH SCROLL (for older browsers)
        ======================================================== */
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {

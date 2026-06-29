@@ -4,11 +4,8 @@ email: wedding@0928.love
 description: > # 我们的婚礼网站
   我们结婚了！2026年9月28日，杭州西湖 · 六通宾馆。
 baseurl: ""
-url: "https://www.0928.love"
+url: "https://0928.love"
 repository: rayshine0928/rayshine0928.github.io
 
 # Build settings
 markdown: kramdown
-sass:
-    sass_dir: _sass
-    style: compressed
