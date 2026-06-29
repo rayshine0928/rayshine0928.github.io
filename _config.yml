@@ -1,0 +1,17 @@
+# Site settings
+title: RAYSHINE0928
+email: rayshine0928@outlook.com
+description: > # this means to ignore newlines until "baseurl:"
+  Integrating AI into the details of life.
+baseurl: "" # the subpath of your site, e.g. /blog/
+url: "http://www.0928.love" # the base hostname & protocol for your site
+repository: rayshine0928/rayshine0928.github.io
+
+twitter_username:
+github_username: rayshine0928
+
+# Build settings
+markdown: kramdown
+sass:
+    sass_dir: _sass
+    style: compressed
