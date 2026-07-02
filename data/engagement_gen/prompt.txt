@@ -1,0 +1,29 @@
+IDENTITY LOCK — HIGHEST PRIORITY (failure if violated):
+The uploaded studio photograph shows TWO PEOPLE—a young woman on the viewer’s LEFT and a young man on the viewer’s RIGHT. The output MUST show BOTH individuals together in frame. Treat their appearances as fixed reference:
+- Preserve each person’s real face exactly: skull and jaw shape, cheekbones, forehead, eye spacing and eye shape, eyelids, eyebrows, nose width and bridge, lips, chin, ears, hairstyle, hair color, hairline, and natural skin tone. Keep moles, freckles, and subtle texture cues from the reference.
+- NO face blend with strangers, NO “AI model” replacement, NO beautification that reshapes bones (no sharper jaw/v-line, no bigger eyes/smaller chin), NO age change, NO gender ambiguity, NO missing either person.
+
+ANATOMY / HANDS — CRITICAL (forbid fused or missing limbs):
+- Each subject has ONE torso connected to TWO arms belonging ONLY to them; each arm ends in EXACTLY ONE hand (two arms + two hands per person). Do NOT splice the man’s forearm/elbow onto the woman’s ribs/shoulder or fuse their skeletons mid-air.
+- WOMAN: BOTH of her distal hands MUST read as complete—not a vanished/stump/almost-clipped RIGHT hand on her body. If one hand is partly hidden, hide it behind HER own arm or ONE clear shared hand-hold, not “missing.”
+- OUTER-FRAME-SIDE CLARITY (typical fix for “double hand on one side”): On the woman’s side away from the man (viewer’s LEFT if she is on left of frame), show at most ONE woman hand in that zone; the man’s bent arm must NOT create a second unexplained hand silhouette attached to her outline.
+- If they hold hands, show ONE clean hand-to-hand junction (two palms meeting); no ghost duplicate pair beside it.
+
+POSE HINT — single unambiguous pattern: walk side-by-side; optional ONE interlocked hand pair at center; each person’s free hand visible and separated in space with clear ownership.
+
+SCENE TRANSFORM (style from reference brief — cinematic golden hour urban):
+Recreate the image as a cinematic golden-hour street portrait of the SAME couple walking together through a busy city crowd. Side profile or three-quarter view is fine; prefer a romantic, editorial “fleeting moment” feel—soft wind catching the woman’s hair (keep her recognizable hair volume, parting, and accessories only if they still match her reference identity), warm sunlight backlighting with natural rim light and hair glow, lens flare reading as real glass—not cartoon.
+
+The man stays clearly the same person (right side of frame in the source); the woman stays clearly the same person (left in the source). Follow the pose hint above ONLY: side-by-side with at most one center hand-hold; avoid “linked arm through jacket” tricks that merge silhouettes.
+
+Environment: shallow depth of field, background filled with softly blurred pedestrians and urban motion bokeh; strong subject separation; volumetric warm light; telephoto look (85mm–135mm), wide aperture feel, ultra-photoreal, high detail, film still quality, natural color grading, subtle film grain, soft bloom, Vogue-style editorial.
+
+Wardrobe: reinterpret as modern minimal dark/neutral casual layers suitable for the street (light jacket optional), while keeping faces, hair, and body proportions consistent with the reference—do not “model swap” bodies.
+
+Lighting: rich golden-hour sunlight, strong backlight with controlled flare, warm orange/amber palette, HDR-like but natural, soft shadows.
+
+Composition: rule of thirds, couple slightly off-center, dynamic yet intimate framing, crowd motion blur behind them.
+
+Mood: nostalgic, dreamy, romantic, poetic realism.
+
+NEGATIVE PROMPT: low quality, overexposed faces, harsh shadows on faces, distorted facial features, changing either person’s identity, only one person in frame, duplicate people, extra limbs, extra hands, third hand, stacked hands on one hip, missing hand, wrist stump, fused couple arms, wrong hand ownership, misattached elbow, blur on subjects, heavy noise, oversharpening, plastic skin, cartoon, anime, 3D render, text, watermark, logo

@@ -1,1 +1,11 @@
 _site/
+.DS_Store
+*.pyc
+__pycache__/
+data/engagement_gen/.venv/
+data/engagement_gen/outputs/
+data/engagement_gen/templates/
+data/engagement_gen/api.env
+data/engagement_gen/results.json
+data/engagement_gen/batch_golden_hour_variants.py
+data/engagement_gen/generate_engagement_photos.py
