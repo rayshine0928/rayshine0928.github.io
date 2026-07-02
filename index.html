@@ -2,15 +2,14 @@
 layout: wedding
 ---
 
-<!-- ==================== HERO — 草坪婚礼全景 ==================== -->
+<!-- ==================== HERO — 噜噜噜妹卡通婚礼 ==================== -->
 <section class="hero" id="hero">
-    <div class="hero-bg" data-parallax="0.3">
-        <img src="{{ '/img/hero_lawn_4k.jpg' | relative_url }}" alt="草坪婚礼" class="hero-bg-img">
-    </div>
-    <div class="hero-overlay"></div>
     <div class="hero-content">
-        <p class="hero-subtitle reveal">We're Getting Married</p>
+        <div class="hero-cartoon-main reveal">
+            <img src="{{ '/img/cartoon_hero.png' | relative_url }}" alt="噜噜和噜妹">
+        </div>
         <h1 class="hero-title reveal">李笑然 <span class="hero-and">&</span> 严瑞</h1>
+        <p class="hero-subtitle reveal">We're Getting Married</p>
         <p class="hero-date reveal">2026 · 09 · 28</p>
         <div class="hero-countdown reveal" id="heroCountdown">
             <div class="cd-item"><span class="cd-num" id="cd-days">88</span><span class="cd-label">Days</span></div>
@@ -22,22 +21,16 @@ layout: wedding
             <div class="cd-item"><span class="cd-num" id="cd-secs">00</span><span class="cd-label">Secs</span></div>
         </div>
     </div>
-    <div class="hero-cartoon" data-parallax="0.6">
-        <img src="{{ '/img/cartoon_couple_hero.png' | relative_url }}" alt="噜噜和噜妹">
-    </div>
     <div class="scroll-hint">
         <span>向下探索我们的故事</span>
         <div class="scroll-line"></div>
     </div>
 </section>
 
-<!-- ==================== INVITATION — 请柬 ==================== -->
+<!-- ==================== INVITATION ==================== -->
 <section class="invitation" id="invitation">
     <div class="container">
         <div class="invitation-layout">
-            <div class="invitation-cartoon" data-parallax="0.7">
-                <img src="{{ '/img/cartoon_couple_invitation.png' | relative_url }}" alt="请柬">
-            </div>
             <div class="invitation-card reveal">
                 <p class="invitation-pretext">Together with their families</p>
                 <h2 class="invitation-names">李笑然 <span>&</span> 严瑞</h2>
@@ -49,6 +42,9 @@ layout: wedding
                     <div class="inv-detail"><i class="fas fa-map-marker-alt"></i><span>杭州市西湖区三台山路149号 · 六通宾馆</span></div>
                 </div>
                 <p class="invitation-closing">执子之手，与子偕老</p>
+            </div>
+            <div class="invitation-cartoon" data-parallax="0.75">
+                <img src="{{ '/img/cartoon_invitation.png' | relative_url }}" alt="请柬">
             </div>
         </div>
     </div>
@@ -68,129 +64,58 @@ layout: wedding
     </div>
 </section>
 
-<!-- ==================== OUR STORY — 四格连环画 ==================== -->
+<!-- ==================== OUR STORY — 四格卡通连环画 ==================== -->
 <section class="story" id="story">
     <div class="container">
         <h2 class="section-title reveal">我们的故事</h2>
         <p class="section-subtitle reveal">Our Story</p>
-
         <div class="story-grid">
-            <!-- ① 初见 -->
-            <div class="story-panel reveal" data-parallax="0.85">
-                <div class="story-img">
-                    <img src="{{ '/img/cartoon_story_01_first_met.png' | relative_url }}" alt="初见">
-                </div>
-                <div class="story-caption">
-                    <span class="story-num">01</span>
-                    <h3>初见 <em>First Met</em></h3>
-                    <p>2021年·春 — 在最美的季节遇见你</p>
-                </div>
+            <div class="story-panel reveal" data-parallax="0.88">
+                <div class="story-img"><img src="{{ '/img/cartoon_story_01.png' | relative_url }}" alt="初见"></div>
+                <div class="story-caption"><span class="story-num">01</span><h3>初见 <em>First Met</em></h3></div>
             </div>
-
-            <!-- ② 相爱 -->
-            <div class="story-panel reveal" data-parallax="0.8">
-                <div class="story-img">
-                    <img src="{{ '/img/cartoon_story_02_love.png' | relative_url }}" alt="相爱">
-                </div>
-                <div class="story-caption">
-                    <span class="story-num">02</span>
-                    <h3>相爱 <em>Fell in Love</em></h3>
-                    <p>和你在一起的每一天，都是最美的时光</p>
-                </div>
+            <div class="story-panel reveal" data-parallax="0.84">
+                <div class="story-img"><img src="{{ '/img/cartoon_story_02.png' | relative_url }}" alt="相爱"></div>
+                <div class="story-caption"><span class="story-num">02</span><h3>相爱 <em>Fell in Love</em></h3></div>
             </div>
-
-            <!-- ③ 求婚 -->
-            <div class="story-panel reveal" data-parallax="0.85">
-                <div class="story-img">
-                    <img src="{{ '/img/cartoon_story_03_proposal.png' | relative_url }}" alt="求婚">
-                </div>
-                <div class="story-caption">
-                    <span class="story-num">03</span>
-                    <h3>求婚 <em>The Proposal</em></h3>
-                    <p>单膝跪地的那一刻，我说出了这辈子最认真的话</p>
-                </div>
+            <div class="story-panel reveal" data-parallax="0.88">
+                <div class="story-img"><img src="{{ '/img/cartoon_story_03.png' | relative_url }}" alt="求婚"></div>
+                <div class="story-caption"><span class="story-num">03</span><h3>求婚 <em>The Proposal</em></h3></div>
             </div>
-
-            <!-- ④ 婚礼 -->
-            <div class="story-panel reveal" data-parallax="0.8">
-                <div class="story-img">
-                    <img src="{{ '/img/cartoon_story_04_wedding.png' | relative_url }}" alt="婚礼">
-                </div>
-                <div class="story-caption">
-                    <span class="story-num">04</span>
-                    <h3>婚礼 <em>The Wedding</em></h3>
-                    <p>2026.09.28 — 邀你见证我们的幸福</p>
-                </div>
+            <div class="story-panel reveal" data-parallax="0.84">
+                <div class="story-img"><img src="{{ '/img/cartoon_story_04.png' | relative_url }}" alt="婚礼"></div>
+                <div class="story-caption"><span class="story-num">04</span><h3>婚礼 <em>The Wedding</em></h3></div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ==================== GALLERY — 甜蜜瞬间 ==================== -->
-<section class="gallery" id="gallery">
-    <div class="container">
-        <h2 class="section-title reveal">甜蜜瞬间</h2>
-        <p class="section-subtitle reveal">Our Sweet Moments</p>
-
-        <div class="gallery-polaroid-grid reveal">
-            <div class="polaroid" data-parallax="0.9">
-                <div class="polaroid-img"><img src="{{ '/img/噜噜和噜妹的结婚婚纱照.jpg' | relative_url }}" alt="婚纱照"></div>
-                <span class="polaroid-label">我们的婚纱照</span>
-            </div>
-            <div class="polaroid" data-parallax="0.85">
-                <div class="polaroid-img"><img src="{{ '/img/噜噜和噜妹的海边婚礼照片.jpg' | relative_url }}" alt="海边"></div>
-                <span class="polaroid-label">海边的约定</span>
-            </div>
-            <div class="polaroid" data-parallax="0.92">
-                <div class="polaroid-img"><img src="{{ '/img/噜噜和噜妹的结婚登记照.jpg' | relative_url }}" alt="登记照"></div>
-                <span class="polaroid-label">我们登记啦</span>
-            </div>
-            <div class="polaroid" data-parallax="0.83">
-                <div class="polaroid-img"><img src="{{ '/img/噜噜和噜妹背对着屏幕靠在一起的照片.jpg' | relative_url }}" alt="背影"></div>
-                <span class="polaroid-label">背靠背的温暖</span>
-            </div>
-            <div class="polaroid" data-parallax="0.88">
-                <div class="polaroid-img"><img src="{{ '/img/噜噜（右）和噜妹（左）的自拍照.jpg' | relative_url }}" alt="自拍1"></div>
-                <span class="polaroid-label">自拍时光</span>
-            </div>
-            <div class="polaroid" data-parallax="0.86">
-                <div class="polaroid-img"><img src="{{ '/img/噜噜（左）和噜妹（右）的自拍照.jpg' | relative_url }}" alt="自拍2"></div>
-                <span class="polaroid-label">自拍时光</span>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ==================== VENUE — 婚礼场地 ==================== -->
+<!-- ==================== VENUE ==================== -->
 <section class="venue" id="venue">
     <div class="container">
         <h2 class="section-title reveal">婚礼场地</h2>
         <p class="section-subtitle reveal">The Venue</p>
-
         <div class="venue-main reveal">
             <div class="venue-logo-card">
                 <img src="{{ '/img/六通宾馆LOGO.png' | relative_url }}" alt="六通宾馆">
                 <h3>杭州 · 六通宾馆</h3>
-                <p>坐落于西湖核心景区三台山路，背倚青山，面朝西湖</p>
+                <p>坐落于西湖核心景区三台山路<br>背倚青山，面朝西湖</p>
             </div>
             <div class="venue-guide-cartoon" data-parallax="0.75">
-                <img src="{{ '/img/cartoon_couple_guide.png' | relative_url }}" alt="指路">
+                <img src="{{ '/img/cartoon_guide.png' | relative_url }}" alt="噜噜噜妹指路">
             </div>
         </div>
-
         <div class="venue-photos reveal">
             <div class="venue-photo"><img src="{{ '/img/六通宾馆正门图.jpg' | relative_url }}" alt="正门"><span>酒店正门</span></div>
-            <div class="venue-photo"><img src="{{ '/img/六通宾馆西湖鸟瞰图.jpg' | relative_url }}" alt="西湖鸟瞰"><span>西湖鸟瞰</span></div>
+            <div class="venue-photo"><img src="{{ '/img/六通宾馆西湖鸟瞰图.jpg' | relative_url }}" alt="西湖"><span>西湖鸟瞰</span></div>
         </div>
-
         <div class="venue-info-grid reveal">
             <div class="venue-info-card"><i class="fas fa-map-marker-alt"></i><h4>地址</h4><p>杭州市西湖区三台山路149号</p></div>
             <div class="venue-info-card"><i class="fas fa-car"></i><h4>停车</h4><p>酒店提供免费停车场</p></div>
             <div class="venue-info-card"><i class="fas fa-subway"></i><h4>交通</h4><p>地铁1号线定安路站，打车约15分钟</p></div>
             <div class="venue-info-card"><i class="fas fa-hotel"></i><h4>住宿</h4><p>酒店提供宾客优惠住宿</p></div>
             <div class="venue-info-card">
-                <i class="fas fa-map"></i><h4>导航</h4>
-                <p>杭州西湖 · 三台山路149号</p>
+                <i class="fas fa-map"></i><h4>导航</h4><p>杭州西湖 · 三台山路149号</p>
                 <a href="https://uri.amap.com/marker?position=120.137,30.234&name=六通宾馆" target="_blank" class="btn-map">打开地图 <i class="fas fa-external-link-alt"></i></a>
             </div>
         </div>
@@ -202,6 +127,9 @@ layout: wedding
     <div class="container">
         <h2 class="section-title reveal">婚礼流程</h2>
         <p class="section-subtitle reveal">Wedding Day</p>
+        <div class="schedule-icons-row reveal">
+            <img src="{{ '/img/cartoon_schedule_icons.png' | relative_url }}" alt="婚礼流程">
+        </div>
         <div class="schedule-timeline reveal">
             <div class="sched-item"><div class="sched-time">09:00</div><div class="sched-dot"></div><div class="sched-content"><h4>💐 迎亲 · 接亲</h4><p>新郎迎接新娘，开启幸福的一天</p></div></div>
             <div class="sched-item"><div class="sched-time">10:30</div><div class="sched-dot"></div><div class="sched-content"><h4>🍵 敬茶仪式</h4><p>向双方父母敬茶，感恩养育之恩</p></div></div>
