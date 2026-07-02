@@ -1,5 +1,5 @@
-"""0928.love — 卡通素材生成器 v3（修正版）
-关键修正：提示词不提及角色名字，只要求保留原图卡通形象，仅变化动作/场景/背景。
+"""0928.love — 噜噜噜妹水豚素材生成器 v4
+参考图 = 水豚夫妇照片，保持水豚形象不变，仅变化动作/场景/背景。
 """
 
 import argparse, asyncio, os, sys
@@ -8,148 +8,174 @@ from edit_image import edit_image, download_image
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 IMG_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "..", "..", "img"))
-REF = os.path.join(IMG_DIR, "cartoon_ref_01.png")
+
+# --- 正确的水豚参考图 ---
+REF_WEDDING = os.path.join(IMG_DIR, "噜噜和噜妹的结婚婚纱照.jpg")
+REF_SELFIE  = os.path.join(IMG_DIR, "噜噜（右）和噜妹（左）的自拍照.jpg")
+REF_BACK    = os.path.join(IMG_DIR, "噜噜和噜妹背对着屏幕靠在一起的照片.jpg")
+REF_BEACH   = os.path.join(IMG_DIR, "噜噜和噜妹的海边婚礼照片.jpg")
+REF_REG     = os.path.join(IMG_DIR, "噜噜和噜妹的结婚登记照.jpg")
+REF_LAWN    = os.path.join(IMG_DIR, "草坪婚礼_彩虹装饰实景.jpg")
 
 # ================================================================
-# 核心规则（所有 prompt 共用）
-# ================================================================
 RULES = """
-CRITICAL RULES:
-- The reference image contains TWO cartoon characters (a male on the left with short dark hair and round glasses, a female on the right with long black hair).
-- PRESERVE these two characters EXACTLY as they appear in the reference: identical faces, hairstyles, glasses, chibi body proportions, flat-vector-with-watercolor art style, and color palette.
-- DO NOT redesign, redraw, restyle, or change the characters' appearance in any way.
-- DO NOT change their faces, hair color, skin tone, or clothing style unless specifically instructed below.
-- ONLY change what is described in the SPECIFIC CHANGE section below.
+CRITICAL — PRESERVE THE TWO CAPYBARA CHARACTERS EXACTLY:
+- The reference image shows two cute capybara characters (one slightly larger/darker, one slightly smaller/lighter).
+- Keep these two capybaras IDENTICAL to how they appear in the reference: same faces, same fur color and texture, same body shape, same cute cartoon-capybara style, same relative sizes.
+- DO NOT change them into humans, other animals, or a different art style.
+- DO NOT add or remove any capybara features (ears, nose shape, whiskers, fur pattern).
+- ONLY change what is described in the SPECIFIC CHANGE below.
 """
 
 ASSETS = {
-    # --- Hero: 牵手 + 透明背景 ---
+    # --- Hero: 透明背景，牵手 ---
     "hero": {
-        "output": "cartoon_hero.png", "size": "1024x1024",
+        "ref": REF_WEDDING, "output": "cartoon_hero.png", "size": "1024x1024",
         "change": """
 SPECIFIC CHANGE:
-- Change the pose: both characters stand side by side, holding hands, facing slightly toward each other with warm happy smiles. Full body visible.
-- REMOVE the background completely — output MUST have a transparent background (PNG with alpha channel). No white, no colored fill, no scene. Just the two characters with a clean transparent background.
+- Change the background: REMOVE it completely. Output MUST have a transparent background (PNG alpha channel). No white fill, no scene.
+- Change the pose slightly: the two capybaras stand side by side, one capybara's paw gently touching the other's. Both facing forward with warm expressions.
+- Keep their wedding attire from the reference if they are wearing any.
 """,
     },
 
-    # --- 请柬: 举着请柬卡片 + 透明背景 ---
+    # --- 请柬: 透明背景，举卡片 ---
     "invitation": {
-        "output": "cartoon_invitation.png", "size": "1024x1024",
+        "ref": REF_WEDDING, "output": "cartoon_invitation.png", "size": "1024x1024",
         "change": """
 SPECIFIC CHANGE:
-- Change the pose: both characters hold a large elegant cream-colored wedding invitation card between them. Each character holds one side of the card. The card faces the viewer directly. Both smile warmly as if personally inviting guests.
-- Only change the pose and add the invitation card prop. Characters remain otherwise identical to the reference.
-- REMOVE the background completely — output MUST have a transparent background (PNG with alpha channel).
+- Change the background: REMOVE it completely. Output MUST have a transparent background (PNG alpha channel).
+- Add a prop: between the two capybaras, place a large elegant cream-colored wedding invitation card. Each capybara has one paw on the card. The card faces forward.
 """,
     },
 
-    # --- 故事① 初见: 咖啡店场景 ---
+    # --- 故事① 初见 ---
     "story_01": {
-        "output": "cartoon_story_01.png", "size": "1024x768",
+        "ref": REF_SELFIE, "output": "cartoon_story_01.png", "size": "1024x768",
         "change": """
 SPECIFIC CHANGE:
-- Change the pose: the two characters stand a short distance apart, just having noticed each other for the first time. The man holds a coffee cup and looks slightly surprised but smiling softly. The woman glances up with a gentle blush. A moment of serendipitous connection.
-- Change the background: a warm cozy coffee shop interior with soft amber lighting, wooden tables, and bookshelves softly blurred in the distance. Full scene illustration.
+- Change the background: a cozy warm coffee shop or park setting with soft lighting. Full illustrated scene.
+- Change the pose: the two capybaras are looking at each other for the first time, a sweet moment of connection. Soft blush on cheeks.
+- Keep the capybaras IDENTICAL — just change the scene and their head/eye direction.
 """,
     },
 
-    # --- 故事② 相爱: 海边/户外场景 ---
+    # --- 故事② 相爱 ---
     "story_02": {
-        "output": "cartoon_story_02.png", "size": "1024x768",
+        "ref": REF_BEACH, "output": "cartoon_story_02.png", "size": "1024x768",
         "change": """
 SPECIFIC CHANGE:
-- Change the pose: the two characters walk side by side along a beautiful beach at sunset. The woman links her arm through the man's. Both are mid-laughter, completely joyful and at ease.
-- Change the background: golden sunset beach scene with soft waves, warm pink-orange sky, gentle clouds. Full scene illustration.
+- Change the background: a beautiful sunset beach with golden-pink sky. Full illustrated scene.
+- Change the pose: the two capybaras walk side by side along the beach, happy and relaxed. One capybara has a small flower tucked behind its ear.
+- Keep the capybaras IDENTICAL — just change the scene and walking pose.
 """,
     },
 
-    # --- 故事③ 求婚: 单膝跪地 ---
+    # --- 故事③ 求婚 ---
     "story_03": {
-        "output": "cartoon_story_03.png", "size": "1024x768",
+        "ref": REF_REG, "output": "cartoon_story_03.png", "size": "1024x768",
         "change": """
 SPECIFIC CHANGE:
-- Change the pose: the male character is down on one knee, looking up with hopeful loving eyes, holding a small ring box with a sparkling diamond. The female character stands before him, both hands covering her mouth in joyful surprise, eyes glistening with happy tears.
-- Change the background: romantic garden at golden hour with soft dreamy bokeh, fairy lights, warm atmosphere. Full scene illustration.
+- Add a prop: a small sparkling diamond ring in a tiny box placed between the two capybaras.
+- Change the pose: one capybara looks at the other with hopeful loving eyes, the other capybara looks surprised and joyful.
+- Change the background: romantic garden with soft bokeh lights at golden hour. Full illustrated scene.
+- Keep the capybaras IDENTICAL.
 """,
     },
 
-    # --- 故事④ 婚礼: 草坪拱门 ---
+    # --- 故事④ 婚礼 ---
     "story_04": {
-        "output": "cartoon_story_04.png", "size": "1024x768",
+        "ref": REF_WEDDING, "output": "cartoon_story_04.png", "size": "1024x768",
         "change": """
 SPECIFIC CHANGE:
-- Change the pose: the two characters stand facing each other under a beautiful outdoor wedding arch decorated with rainbow ribbons and flowers. They hold hands, exchanging vows with the brightest most joyful smiles.
-- Change the background: outdoor lawn wedding scene — green grass, rainbow-decorated wooden arch, blue sky with white clouds, warm golden sunlight. Full scene illustration.
+- Change the background: a beautiful outdoor lawn wedding scene with a wooden arch decorated with rainbow ribbons and flowers, green grass, blue sky. This should match the style of a lawn wedding photo.
+- Change the pose: the two capybaras stand together under the arch, facing each other lovingly, a wedding moment.
+- Keep the capybaras IDENTICAL — just change the scene to a lawn wedding setting.
 """,
     },
 
     # --- 场地区指路: 透明背景 ---
     "guide": {
-        "output": "cartoon_guide.png", "size": "1024x1024",
+        "ref": REF_BACK, "output": "cartoon_guide.png", "size": "1024x1024",
         "change": """
 SPECIFIC CHANGE:
-- Change the pose: the male character points forward/diagonally with one hand (like a friendly tour guide showing the way). The female character waves welcomingly with one hand and has a cheerful expression. Both look happy and inviting.
-- REMOVE the background completely — output MUST have a transparent background (PNG with alpha channel).
+- Change the background: REMOVE it completely. Output MUST have a transparent background (PNG alpha channel).
+- Change the pose: the two capybaras face forward. One capybara has one paw raised as if pointing/waving in a welcoming "this way!" gesture. Both have friendly expressions.
+- Keep the capybaras IDENTICAL — just change the pose and remove background.
 """,
     },
 
-    # --- 流程图标 x7: 透明背景横排 ---
+    # --- 流程图标 x7: 透明背景 ---
     "schedule": {
-        "output": "cartoon_schedule_icons.png", "size": "1536x1024",
+        "ref": REF_WEDDING, "output": "cartoon_schedule_icons.png", "size": "1536x1024",
         "change": """
 SPECIFIC CHANGE:
-- Create SEVEN small icon versions of the two characters arranged in a horizontal row. Each icon shows them doing a different wedding-day activity:
-  1. The man walking toward the woman holding flowers (迎亲)
-  2. Both kneeling and offering tea cups respectfully (敬茶)
-  3. The man taking a photo of the woman with a camera (拍摄)
-  4. Both standing under a tiny wedding arch exchanging rings (仪式)
-  5. Both sitting at a table raising glasses with a small cake (晚宴)
-  6. Both dancing with musical notes (Party)
-  7. Both waving goodbye warmly (送客)
-- Keep the characters' appearance IDENTICAL to the reference in every icon — only pose changes.
-- REMOVE the background completely — each icon group should have a transparent background (PNG with alpha channel). Arrange all 7 icons in one row with even spacing.
+- Create SEVEN small simple icon versions of the two capybaras arranged horizontally. Each icon shows a wedding activity:
+  1. One capybara holding a tiny flower approaching the other (迎亲)
+  2. Both capybaras sitting, offering a tiny tea cup (敬茶)
+  3. One capybara with a tiny camera, the other posing (拍摄)
+  4. Both capybaras under a tiny flower arch (仪式)
+  5. Both capybaras at a tiny table with a tiny cake (晚宴)
+  6. Both capybaras dancing with tiny musical notes (Party)
+  7. Both capybaras waving goodbye (送客)
+- REMOVE the background completely — transparent PNG.
+- Keep the capybaras IDENTICAL in every icon — same cute style, just simple icon-size poses.
+- Arrange all 7 evenly in one horizontal row.
+""",
+    },
+
+    # --- Hero 草坪背景 4K ---
+    "hero_bg": {
+        "ref": REF_LAWN, "output": "hero_lawn_4k.jpg", "size": "2560x1440",
+        "change": """
+SPECIFIC CHANGE:
+- Enhance this outdoor lawn wedding photo to breathtaking 4K quality.
+- Boost resolution, sharpen details (grass, flowers, rainbow ribbons, wooden arch).
+- Enhance sunlight to warm golden hour glow. Make rainbow decorations vibrant and saturated.
+- Blue sky with soft clouds. Lush green lawn. Natural, photorealistic, editorial grade.
+- DO NOT add any people or animals. Keep the scene empty — this is a venue photo without subjects.
+- DO NOT change the composition or layout of the decorations/arch.
 """,
     },
 }
 
 
 async def generate_one(name, cfg, dry_run):
-    input_path = REF
+    ref_path = cfg["ref"]
     output_path = os.path.join(IMG_DIR, cfg["output"])
     prompt = RULES + "\n\n" + cfg["change"]
 
-    if not os.path.isfile(input_path):
-        print(f"❌ 参考图缺失: {input_path}")
+    if not os.path.isfile(ref_path):
+        print(f"❌ 参考图缺失: {ref_path}")
         return False
 
     print(f"\n{'='*60}")
-    print(f"🎨 {name} → {cfg['output']} ({cfg['size']})")
+    print(f"🎨 {name} | 参考: {os.path.basename(ref_path)}")
+    print(f"   → {cfg['output']} ({cfg['size']})")
     print(f"{'='*60}")
 
     if dry_run:
-        print(f"\n📝 PROMPT:\n{'-'*40}\n{prompt[:600]}\n{'-'*40}\n")
+        print(f"\n📝 {prompt[:400]}...\n")
         return True
 
-    print("⏳ 调用 API...")
-    kind, payload = await edit_image(input_path, prompt=prompt, size=cfg["size"])
+    print("⏳ API...")
+    kind, payload = await edit_image(ref_path, prompt=prompt, size=cfg["size"])
 
     if kind == "bytes":
-        with open(output_path, "wb") as f:
-            f.write(payload)
-        print(f"✅ 已保存: {output_path}")
+        with open(output_path, "wb") as f: f.write(payload)
+        print(f"✅ {cfg['output']}")
         return True
     elif kind == "url":
         ok = await download_image(payload, output_path)
-        print(f"{'✅' if ok else '❌'} {'已保存' if ok else '下载失败'}")
+        print(f"{'✅' if ok else '❌'} {cfg['output']}")
         return ok
     else:
-        print(f"❌ 失败: {str(payload)[:300]}")
+        print(f"❌ {str(payload)[:200]}")
         return False
 
 
 async def main():
-    p = argparse.ArgumentParser(description="卡通素材生成器 v3")
+    p = argparse.ArgumentParser()
     p.add_argument("--all", action="store_true")
     p.add_argument("--asset", type=str)
     p.add_argument("--dry-run", action="store_true")
@@ -157,7 +183,8 @@ async def main():
     args = p.parse_args()
 
     if args.list:
-        for n, c in ASSETS.items(): print(f"  {n} → {c['output']} ({c['size']})")
+        for n, c in ASSETS.items():
+            print(f"  {n} ← {os.path.basename(c['ref'])} → {c['output']}")
         return
     if args.asset:
         await generate_one(args.asset, ASSETS[args.asset], args.dry_run)
@@ -165,7 +192,7 @@ async def main():
         ok = 0
         for n, c in ASSETS.items():
             if await generate_one(n, c, args.dry_run): ok += 1
-        if not args.dry_run: print(f"\n🎉 {ok}/{len(ASSETS)} 成功")
+        if not args.dry_run: print(f"\n🎉 {ok}/{len(ASSETS)}")
     else:
         p.print_help()
 
