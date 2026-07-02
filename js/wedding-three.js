@@ -1,6 +1,7 @@
 /* ============================================================
-   0928.love — Dramatic Three.js Wedding Scene v4
-   Giant rings, galaxy swirl, heart bursts, fireflies, crystals
+   0928.love — Rainbow Silk Ribbons + Sunlight Scene
+   Flowing silk scarves drifting through 3D space
+   Warm golden sunlight, soft shadows, premium elegance
    ============================================================ */
 
 (function() {
@@ -23,303 +24,222 @@
 
         // --- Scene ---
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x0a0305);
-        scene.fog = new THREE.FogExp2(0x0a0305, 0.00008);
+        scene.background = new THREE.Color(0xfdf8f2); // warm cream
+        scene.fog = new THREE.Fog(0xfdf8f2, 15, 60);
 
-        const camera = new THREE.PerspectiveCamera(60, W / H, 0.1, 120);
-        camera.position.set(0, 2, 24);
-        camera.lookAt(0, 0, -2);
+        const camera = new THREE.PerspectiveCamera(55, W / H, 0.1, 100);
+        camera.position.set(0, 1, 28);
+        camera.lookAt(0, 1, 0);
 
         const renderer = new THREE.WebGLRenderer({ alpha: false, antialias: !isMobile });
         renderer.setSize(W, H);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = !isMobile;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.2;
         renderer.domElement.style.cssText = 'position:absolute;top:0;left:0;';
         container.appendChild(renderer.domElement);
         container.setAttribute('data-three', 'active');
 
-        // --- Lighting ---
-        scene.add(new THREE.AmbientLight(0x2a1015, 0.5));
-        const key = new THREE.PointLight(0xffc080, 3, 40, 1.5);
-        key.position.set(8, 5, 10); scene.add(key);
-        const fill = new THREE.PointLight(0xff7090, 2, 30, 1.5);
-        fill.position.set(-6, -3, 6); scene.add(fill);
-        const rim = new THREE.PointLight(0xffffff, 1.5, 25, 2);
-        rim.position.set(0, 6, -8); scene.add(rim);
+        // ============================================================
+        // LIGHTING — Golden sunlight simulation
+        // ============================================================
+        const ambient = new THREE.AmbientLight(0xfff5eb, 0.8);
+        scene.add(ambient);
+
+        const hemisphere = new THREE.HemisphereLight(0xffffff, 0x8d7c6b, 0.4);
+        scene.add(hemisphere);
+
+        // Main "sun" directional light — warm golden
+        const sunLight = new THREE.DirectionalLight(0xffeedd, 2.5);
+        sunLight.position.set(12, 18, 8);
+        sunLight.castShadow = !isMobile;
+        if (!isMobile) {
+            sunLight.shadow.mapSize.width = 1024;
+            sunLight.shadow.mapSize.height = 1024;
+            sunLight.shadow.camera.near = 0.5;
+            sunLight.shadow.camera.far = 80;
+            sunLight.shadow.camera.left = -25;
+            sunLight.shadow.camera.right = 25;
+            sunLight.shadow.camera.top = 25;
+            sunLight.shadow.camera.bottom = -25;
+            sunLight.shadow.bias = -0.0001;
+            sunLight.shadow.normalBias = 0.02;
+        }
+        scene.add(sunLight);
+
+        // Warm fill light
+        const fillLight = new THREE.DirectionalLight(0xffccaa, 0.6);
+        fillLight.position.set(-5, 3, -3);
+        scene.add(fillLight);
+
+        // Subtle rim light for silk sheen
+        const rimLight = new THREE.PointLight(0xffffff, 1.5, 30);
+        rimLight.position.set(3, 8, -5);
+        scene.add(rimLight);
 
         // ============================================================
-        // 1. GIANT WEDDING RINGS — dramatic, crossing
+        // RAINBOW SILK RIBBONS
         // ============================================================
-        const ringPivot = new THREE.Group();
-        scene.add(ringPivot);
+        const ribbonColors = [
+            '#E8A0B4', // soft rose
+            '#F0C8A0', // warm peach
+            '#F5E0B0', // pale gold
+            '#C8D8A0', // sage green
+            '#A0C8D8', // sky blue
+            '#C0B0D8', // soft lavender
+        ];
 
-        const ringGroup = new THREE.Group();
-        ringPivot.add(ringGroup);
-        ringGroup.position.set(0, 0, 0);
+        const ribbons = [];
+        const ribbonGroup = new THREE.Group();
+        scene.add(ribbonGroup);
 
-        const ring1 = new THREE.Mesh(
-            new THREE.TorusGeometry(7, 0.18, 48, 160),
-            new THREE.MeshStandardMaterial({
-                color: 0xd4a574, emissive: 0xd4a574, emissiveIntensity: 1.5,
-                metalness: 0.95, roughness: 0.12, transparent: true, opacity: 0.8,
-            })
-        );
-        ring1.rotation.set(Math.PI * 0.5, 0, 0);
-        ringGroup.add(ring1);
-
-        const ring2 = new THREE.Mesh(
-            new THREE.TorusGeometry(6.5, 0.18, 48, 160),
-            new THREE.MeshStandardMaterial({
-                color: 0xb76e79, emissive: 0xb76e79, emissiveIntensity: 1.3,
-                metalness: 0.95, roughness: 0.12, transparent: true, opacity: 0.8,
-            })
-        );
-        ring2.rotation.set(Math.PI * 0.3, Math.PI * 0.15, 0);
-        ringGroup.add(ring2);
-
-        // Diamond cluster at ring center
-        const diamondGroup = new THREE.Group();
-        ringGroup.add(diamondGroup);
-
-        const mainDiamond = new THREE.Mesh(
-            new THREE.OctahedronGeometry(0.4, 0),
-            new THREE.MeshStandardMaterial({
-                color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 2.5,
-                roughness: 0, metalness: 0.1,
-            })
-        );
-        diamondGroup.add(mainDiamond);
-
-        // Orbiting crystals around diamond
-        const crystals = [];
-        for (let i = 0; i < 8; i++) {
-            const angle = (i / 8) * Math.PI * 2;
-            const cGeom = new THREE.OctahedronGeometry(0.08, 0);
-            const cMat = new THREE.MeshStandardMaterial({
-                color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 1.5,
-                roughness: 0,
+        // Silk material template
+        function createSilkMaterial(hexColor) {
+            return new THREE.MeshPhysicalMaterial({
+                color: new THREE.Color(hexColor),
+                metalness: 0.05,
+                roughness: 0.25,
+                clearcoat: 0.3,
+                clearcoatRoughness: 0.25,
+                sheen: 0.8,
+                sheenRoughness: 0.3,
+                sheenColor: new THREE.Color(0xffffff),
+                specularIntensity: 0.4,
+                specularColor: new THREE.Color(0xffffff),
+                transparent: true,
+                opacity: 0.65,
+                side: THREE.DoubleSide,
+                envMapIntensity: 0.5,
             });
-            const crystal = new THREE.Mesh(cGeom, cMat);
-            crystal.userData = { angle, radius: 0.8 + Math.random() * 0.3, speed: 0.5 + Math.random(), yOff: (Math.random() - 0.5) * 0.6 };
-            crystal.position.set(
-                Math.cos(angle) * crystal.userData.radius,
-                crystal.userData.yOff,
-                Math.sin(angle) * crystal.userData.radius
-            );
-            diamondGroup.add(crystal);
-            crystals.push(crystal);
         }
 
-        ringPivot.position.set(0, 1, -4);
+        // Each ribbon is a TubeGeometry along an animated CatmullRom curve
+        function createRibbon(hexColor, index) {
+            const total = ribbonColors.length;
+            const segments = 80;
+            const tubularSegments = 200;
+            const radius = 0.15 + Math.random() * 0.2;
 
-        // ============================================================
-        // 2. GALAXY SPIRAL PARTICLES
-        // ============================================================
-        const galaxyCount = isMobile ? 400 : 800;
-        const gPositions = new Float32Array(galaxyCount * 3);
-        const gColors = new Float32Array(galaxyCount * 3);
-        const gSizes = new Float32Array(galaxyCount);
-
-        for (let i = 0; i < galaxyCount; i++) {
-            // Logarithmic spiral
-            const t = (i / galaxyCount) * Math.PI * 6;
-            const radius = 2 + t * 0.8;
-            const spread = 0.3 + Math.random() * 1.5;
-            const theta = t + (Math.random() - 0.5) * 1.2;
-
-            gPositions[i * 3] = Math.cos(theta) * (radius + (Math.random() - 0.5) * spread * 4);
-            gPositions[i * 3 + 1] = (Math.random() - 0.5) * spread * 3;
-            gPositions[i * 3 + 2] = Math.sin(theta) * (radius + (Math.random() - 0.5) * spread * 4);
-
-            gSizes[i] = 0.06 + (1 - i / galaxyCount) * 0.25;
-
-            const mix = i / galaxyCount;
-            const c = new THREE.Color();
-            c.setHSL(0.1 + mix * 0.08, 0.6, 0.5 + mix * 0.5);
-            gColors[i * 3] = c.r;
-            gColors[i * 3 + 1] = c.g;
-            gColors[i * 3 + 2] = c.b;
-        }
-
-        const galaxyGeom = new THREE.BufferGeometry();
-        galaxyGeom.setAttribute('position', new THREE.BufferAttribute(gPositions, 3));
-        galaxyGeom.setAttribute('color', new THREE.BufferAttribute(gColors, 3));
-        galaxyGeom.setAttribute('size', new THREE.BufferAttribute(gSizes, 1));
-
-        const galaxyMat = new THREE.PointsMaterial({
-            size: 0.35,
-            map: createGlowTexture(),
-            blending: THREE.AdditiveBlending,
-            depthWrite: false, depthTest: true,
-            vertexColors: true, transparent: true, opacity: 0.8,
-        });
-
-        const galaxy = new THREE.Points(galaxyGeom, galaxyMat);
-        galaxy.rotation.x = Math.PI * 0.25;
-        scene.add(galaxy);
-
-        // ============================================================
-        // 3. FIREFLY SWARMS — organic clusters
-        // ============================================================
-        const swarmCount = isMobile ? 6 : 12;
-        const firefliesPerSwarm = isMobile ? 15 : 30;
-        const swarms = [];
-
-        for (let s = 0; s < swarmCount; s++) {
-            const ffCount = firefliesPerSwarm;
-            const ffPositions = new Float32Array(ffCount * 3);
-            const ffColors = new Float32Array(ffCount * 3);
-            const ffSizes = new Float32Array(ffCount);
-
-            const center = {
-                x: (Math.random() - 0.5) * 30,
-                y: (Math.random() - 0.5) * 20,
-                z: (Math.random() - 0.5) * 15,
-            };
-
-            for (let i = 0; i < ffCount; i++) {
-                ffPositions[i * 3] = center.x + (Math.random() - 0.5) * 4;
-                ffPositions[i * 3 + 1] = center.y + (Math.random() - 0.5) * 3;
-                ffPositions[i * 3 + 2] = center.z + (Math.random() - 0.5) * 4;
-                ffSizes[i] = 0.04 + Math.random() * 0.15;
-                const c = new THREE.Color().setHSL(0.12 + Math.random() * 0.05, 0.5, 0.7 + Math.random() * 0.3);
-                ffColors[i * 3] = c.r;
-                ffColors[i * 3 + 1] = c.g;
-                ffColors[i * 3 + 2] = c.b;
+            // Initial control points — gentle wave
+            const baseY = -6 + index * 4;
+            const points = [];
+            const numCP = 12;
+            for (let i = 0; i < numCP; i++) {
+                const t = i / (numCP - 1);
+                const x = Math.sin(t * Math.PI * 2.5 + index * 1.2) * (6 + index * 0.5);
+                const y = baseY + t * 14;
+                const z = Math.cos(t * Math.PI * 1.8 + index * 0.7) * (4 + Math.sin(index) * 2) - 3;
+                points.push(new THREE.Vector3(x, y, z));
             }
 
-            const ffGeom = new THREE.BufferGeometry();
-            ffGeom.setAttribute('position', new THREE.BufferAttribute(ffPositions, 3));
-            ffGeom.setAttribute('color', new THREE.BufferAttribute(ffColors, 3));
-            ffGeom.setAttribute('size', new THREE.BufferAttribute(ffSizes, 1));
+            const curve = new THREE.CatmullRomCurve3(points, false, 'catmullrom', 0.5);
+            const tubeGeom = new THREE.TubeGeometry(curve, tubularSegments, radius, segments, false);
+            const material = createSilkMaterial(hexColor);
+            const mesh = new THREE.Mesh(tubeGeom, material);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
 
-            const ffMat = new THREE.PointsMaterial({
-                size: 0.25,
-                map: createGlowTexture(),
-                blending: THREE.AdditiveBlending,
-                depthWrite: false, depthTest: true,
-                vertexColors: true, transparent: true, opacity: 0.9,
-            });
-
-            const ffMesh = new THREE.Points(ffGeom, ffMat);
-            ffMesh.userData = {
-                center,
-                phase: Math.random() * Math.PI * 2,
-                speed: 0.2 + Math.random() * 0.6,
-                amplitude: 2 + Math.random() * 4,
+            // Store animation data
+            mesh.userData = {
+                basePoints: points.map(p => p.clone()),
+                index: index,
+                phase: index * 0.8 + Math.random() * 0.5,
+                speed: 0.3 + Math.random() * 0.5,
+                amplitude: 1.5 + Math.random() * 2.5,
+                curve: curve,
             };
-            scene.add(ffMesh);
-            swarms.push(ffMesh);
+
+            return mesh;
         }
 
-        // ============================================================
-        // 4. HEART CONSTELLATION — particles that form a heart
-        // ============================================================
-        const heartCount = 200;
-        const heartPositions = new Float32Array(heartCount * 3);
-        const heartRandom = new Float32Array(heartCount * 3);
-        const heartColors = new Float32Array(heartCount * 3);
-        const heartSizes = new Float32Array(heartCount);
-
-        // Precompute heart shape
-        for (let i = 0; i < heartCount; i++) {
-            const t = (i / heartCount) * Math.PI * 2;
-            const x = 16 * Math.pow(Math.sin(t), 3);
-            const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
-            heartPositions[i * 3] = x * 0.35;
-            heartPositions[i * 3 + 1] = y * 0.35;
-            heartPositions[i * 3 + 2] = (Math.random() - 0.5) * 2;
-
-            // Random scattered positions
-            heartRandom[i * 3] = (Math.random() - 0.5) * 25;
-            heartRandom[i * 3 + 1] = (Math.random() - 0.5) * 20;
-            heartRandom[i * 3 + 2] = (Math.random() - 0.5) * 12;
-
-            heartSizes[i] = 0.05 + Math.random() * 0.2;
-
-            const c = new THREE.Color().setHSL(0.93 + Math.random() * 0.07, 0.6, 0.6 + Math.random() * 0.4);
-            heartColors[i * 3] = c.r;
-            heartColors[i * 3 + 1] = c.g;
-            heartColors[i * 3 + 2] = c.b;
-        }
-
-        const heartGeom = new THREE.BufferGeometry();
-        heartGeom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(heartCount * 3), 3));
-        heartGeom.setAttribute('color', new THREE.BufferAttribute(heartColors, 3));
-        heartGeom.setAttribute('size', new THREE.BufferAttribute(heartSizes, 1));
-
-        const heartMat = new THREE.PointsMaterial({
-            size: 0.3,
-            map: createGlowTexture('#ff8899'),
-            blending: THREE.AdditiveBlending,
-            depthWrite: false, depthTest: true,
-            vertexColors: true, transparent: true, opacity: 0,
+        ribbonColors.forEach((color, i) => {
+            const ribbon = createRibbon(color, i);
+            ribbons.push(ribbon);
+            ribbonGroup.add(ribbon);
         });
 
-        const heartMesh = new THREE.Points(heartGeom, heartMat);
-        heartMesh.position.set(0, 2, -6);
-        scene.add(heartMesh);
-
         // ============================================================
-        // 5. FLOATING "09.28" — box geometry forming numbers
+        // SPARKLE PARTICLES — catch the sunlight
         // ============================================================
-        const dateGroup = new THREE.Group();
-        dateGroup.position.set(0, -6, -10);
-        scene.add(dateGroup);
+        const sparkleCount = isMobile ? 200 : 500;
+        const sPositions = new Float32Array(sparkleCount * 3);
+        const sColors = new Float32Array(sparkleCount * 3);
+        const sSizes = new Float32Array(sparkleCount);
 
-        // Create "0928" with small cubes in a pixel-art style
-        function createDigit(digit, offsetX) {
-            const patterns = {
-                '0': ['111','101','101','101','111'],
-                '2': ['111','001','111','100','111'],
-                '8': ['111','101','111','101','111'],
-                '9': ['111','101','111','001','111'],
-                '·': ['000','000','010','000','000'],
-            };
-            const pattern = patterns[digit] || patterns['0'];
-            const group = new THREE.Group();
-            const size = 0.22;
-            const gap = 0.26;
+        const sparklePalette = [
+            [1, 0.95, 0.8],   // warm white
+            [1, 0.85, 0.7],   // gold
+            [0.95, 0.75, 0.8], // rose
+            [0.8, 0.9, 1],    // soft blue
+            [0.85, 1, 0.85],  // soft green
+        ];
 
-            for (let row = 0; row < 5; row++) {
-                for (let col = 0; col < 3; col++) {
-                    if (pattern[row][col] === '1') {
-                        const box = new THREE.Mesh(
-                            new THREE.BoxGeometry(size, size, size * 0.5),
-                            new THREE.MeshStandardMaterial({
-                                color: 0xd4a574, emissive: 0xd4a574, emissiveIntensity: 0.8,
-                                metalness: 0.3, roughness: 0.4, transparent: true, opacity: 0.7,
-                            })
-                        );
-                        box.position.set(col * gap, (4 - row) * gap, 0);
-                        group.add(box);
-                    }
-                }
-            }
-            group.position.x = offsetX;
-            return group;
+        for (let i = 0; i < sparkleCount; i++) {
+            sPositions[i * 3] = (Math.random() - 0.5) * 35;
+            sPositions[i * 3 + 1] = (Math.random() - 0.5) * 25;
+            sPositions[i * 3 + 2] = (Math.random() - 0.5) * 18;
+            sSizes[i] = 0.02 + Math.random() * 0.12;
+
+            const c = sparklePalette[Math.floor(Math.random() * sparklePalette.length)];
+            sColors[i * 3] = c[0];
+            sColors[i * 3 + 1] = c[1];
+            sColors[i * 3 + 2] = c[2];
         }
 
-        dateGroup.add(createDigit('0', -4.5));
-        dateGroup.add(createDigit('9', -2.8));
-        dateGroup.add(createDigit('·', -1.2));
-        dateGroup.add(createDigit('2', 0.0));
-        dateGroup.add(createDigit('8', 1.7));
+        const sparkleGeom = new THREE.BufferGeometry();
+        sparkleGeom.setAttribute('position', new THREE.BufferAttribute(sPositions, 3));
+        sparkleGeom.setAttribute('color', new THREE.BufferAttribute(sColors, 3));
+        sparkleGeom.setAttribute('size', new THREE.BufferAttribute(sSizes, 1));
+
+        // Sparkle texture — star-like glow
+        const sparkleCanvas = document.createElement('canvas');
+        sparkleCanvas.width = 32;
+        sparkleCanvas.height = 32;
+        const sctx = sparkleCanvas.getContext('2d');
+        const sgrad = sctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+        sgrad.addColorStop(0, 'rgba(255,255,255,1)');
+        sgrad.addColorStop(0.02, 'rgba(255,255,240,0.95)');
+        sgrad.addColorStop(0.15, 'rgba(255,220,180,0.6)');
+        sgrad.addColorStop(0.5, 'rgba(200,180,160,0.1)');
+        sgrad.addColorStop(1, 'rgba(0,0,0,0)');
+        sctx.fillStyle = sgrad;
+        sctx.fillRect(0, 0, 32, 32);
+
+        const sparkleTex = new THREE.CanvasTexture(sparkleCanvas);
+
+        const sparkleMat = new THREE.PointsMaterial({
+            size: 0.25,
+            map: sparkleTex,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+            depthTest: true,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.7,
+        });
+
+        const sparkles = new THREE.Points(sparkleGeom, sparkleMat);
+        scene.add(sparkles);
 
         // ============================================================
-        // UTILITY: Glow texture
+        // SOFT GROUND SHADOW — semi-transparent plane
         // ============================================================
-        function createGlowTexture(tint) {
-            const cvs = document.createElement('canvas'); cvs.width = 64; cvs.height = 64;
-            const ctx = cvs.getContext('2d');
-            const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-            grad.addColorStop(0, 'rgba(255,255,255,1)');
-            grad.addColorStop(0.06, 'rgba(255,240,220,0.95)');
-            grad.addColorStop(0.3, tint ? 'rgba(255,150,160,0.4)' : 'rgba(220,180,140,0.4)');
-            grad.addColorStop(0.7, 'rgba(100,40,50,0.04)');
-            grad.addColorStop(1, 'rgba(0,0,0,0)');
-            ctx.fillStyle = grad; ctx.fillRect(0, 0, 64, 64);
-            return new THREE.CanvasTexture(cvs);
-        }
+        const shadowPlane = new THREE.Mesh(
+            new THREE.PlaneGeometry(40, 30),
+            new THREE.MeshBasicMaterial({
+                color: 0x000000,
+                transparent: true,
+                opacity: 0.04,
+                side: THREE.DoubleSide,
+                depthWrite: false,
+            })
+        );
+        shadowPlane.rotation.x = -Math.PI * 0.48;
+        shadowPlane.position.set(0, -10, -5);
+        shadowPlane.receiveShadow = true;
+        scene.add(shadowPlane);
 
         // ============================================================
         // SECTION DETECTION
@@ -346,7 +266,7 @@
         }
 
         // ============================================================
-        // ANIMATION LOOP
+        // ANIMATION
         // ============================================================
         const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
         document.addEventListener('mousemove', e => {
@@ -360,8 +280,6 @@
         }, { passive: true });
 
         const clock = new THREE.Clock();
-        let heartFormTimer = 0;
-        let heartVisible = false;
 
         function animate() {
             requestAnimationFrame(animate);
@@ -372,140 +290,114 @@
             mouse.x += (mouse.tx - mouse.x) * 0.03;
             mouse.y += (mouse.ty - mouse.y) * 0.03;
 
-            // Dramatic camera orbit
-            const camRadius = 24;
-            const camAngle = time * 0.08 + mouse.x * 0.5;
-            camera.position.x += (Math.sin(camAngle) * camRadius * 0.3 - camera.position.x) * 0.015;
-            camera.position.y += (2 + mouse.y * 4 - camera.position.y) * 0.02;
-            camera.position.z += (camRadius - camera.position.z) * 0.015;
-            camera.lookAt(0, 0, -2);
+            // Camera gentle sway
+            camera.position.x += (mouse.x * 3 - camera.position.x) * 0.015;
+            camera.position.y += (1 + mouse.y * 2 - camera.position.y) * 0.015;
+            camera.lookAt(0, 1, -2);
 
-            // --- Section-driven parameters ---
-            let ringOpacityTarget = 0.8, galaxyOpacityTarget = 0.8;
-            let heartOpacityTarget = 0, dateOpacityTarget = 0.6;
+            // --- Section-driven visual parameters ---
+            let ribbonOpacityTarget = 0.65;
+            let sparkleOpacityTarget = 0.7;
+            let sunIntensityTarget = 2.5;
+            let cameraFovTarget = 55;
 
             switch (currentSection) {
                 case 'hero':
-                    ringOpacityTarget = 0.85; galaxyOpacityTarget = 0.85;
-                    heartOpacityTarget = 0.9; dateOpacityTarget = 0.7;
+                    ribbonOpacityTarget = 0.7; sparkleOpacityTarget = 0.8;
+                    sunIntensityTarget = 3.0; cameraFovTarget = 52;
                     break;
                 case 'countdown':
-                    ringOpacityTarget = 1.0; galaxyOpacityTarget = 0.9;
-                    heartOpacityTarget = 0.3; dateOpacityTarget = 0.9;
+                    ribbonOpacityTarget = 0.55; sparkleOpacityTarget = 0.9;
+                    sunIntensityTarget = 2.0; cameraFovTarget = 58;
                     break;
                 case 'venue':
-                    ringOpacityTarget = 0.6; galaxyOpacityTarget = 0.6;
-                    heartOpacityTarget = 0; dateOpacityTarget = 0.4;
+                    ribbonOpacityTarget = 0.45; sparkleOpacityTarget = 0.5;
+                    sunIntensityTarget = 1.8; cameraFovTarget = 60;
                     break;
                 default:
-                    ringOpacityTarget = 0.4; galaxyOpacityTarget = 0.5;
-                    heartOpacityTarget = 0; dateOpacityTarget = 0.3;
+                    ribbonOpacityTarget = 0.35; sparkleOpacityTarget = 0.4;
+                    sunIntensityTarget = 1.5; cameraFovTarget = 62;
             }
 
-            // Smooth transitions
-            ring1.material.opacity += (ringOpacityTarget - ring1.material.opacity) * 0.03;
-            ring2.material.opacity += (ringOpacityTarget - ring2.material.opacity) * 0.03;
-            galaxyMat.opacity += (galaxyOpacityTarget - galaxyMat.opacity) * 0.03;
-            heartMat.opacity += (heartOpacityTarget - heartMat.opacity) * 0.03;
+            // Smooth light transition
+            sunLight.intensity += (sunIntensityTarget - sunLight.intensity) * 0.02;
+            camera.fov += (cameraFovTarget - camera.fov) * 0.02;
+            camera.updateProjectionMatrix();
 
-            dateGroup.children.forEach(g => {
-                g.children.forEach(b => {
-                    b.material.opacity += (dateOpacityTarget - b.material.opacity) * 0.03;
+            // --- Animate silk ribbons ---
+            ribbons.forEach((ribbon, idx) => {
+                const ud = ribbon.userData;
+                const bp = ud.basePoints;
+
+                // Build new control points — each shifts on layered sine waves
+                const newPoints = bp.map((p, i) => {
+                    const t = i / (bp.length - 1);
+                    const waveX = Math.sin(time * ud.speed * 1.3 + t * 3 + ud.phase) * ud.amplitude;
+                    const waveY = Math.cos(time * ud.speed * 0.7 + t * 2.5 + ud.phase) * ud.amplitude * 0.6;
+                    const waveZ = Math.sin(time * ud.speed * 0.9 + t * 2 + ud.phase + 1.5) * ud.amplitude * 0.8;
+                    // Additional slow drift
+                    const driftX = Math.sin(time * 0.2 + ud.phase) * 1.5;
+                    const driftZ = Math.cos(time * 0.25 + ud.phase) * 1.2;
+
+                    return new THREE.Vector3(
+                        p.x + waveX + driftX,
+                        p.y + waveY,
+                        p.z + waveZ + driftZ
+                    );
                 });
+
+                // Rebuild curve and geometry
+                const curve = new THREE.CatmullRomCurve3(newPoints, false, 'catmullrom', 0.5);
+                const tubularSegments = 200;
+                const segments = 80;
+                const radius = 0.15 + idx * 0.03;
+                const newGeom = new THREE.TubeGeometry(curve, tubularSegments, radius, segments, false);
+
+                ribbon.geometry.dispose();
+                ribbon.geometry = newGeom;
+                ribbon.userData.curve = curve;
+
+                // Opacity transition
+                ribbon.material.opacity += (ribbonOpacityTarget - ribbon.material.opacity) * 0.03;
             });
 
-            // --- Ring animation ---
-            ring1.rotation.z += dt * 0.25;
-            ring1.rotation.x += dt * 0.12;
-            ring2.rotation.z -= dt * 0.2;
-            ring2.rotation.y += dt * 0.15;
-            ringGroup.rotation.y += dt * 0.08;
-            ringGroup.position.y = Math.sin(time * 0.35) * 1.2;
-            ringGroup.rotation.x = Math.sin(time * 0.25) * 0.2;
+            // --- Sparkle animation ---
+            sparkleMat.opacity += (sparkleOpacityTarget - sparkleMat.opacity) * 0.03;
+            sparkles.rotation.y += dt * 0.03;
+            sparkles.rotation.x += dt * 0.015;
 
-            // --- Diamond pulse ---
-            const pulse = 1 + Math.sin(time * 4) * 0.5 + Math.sin(time * 9) * 0.35;
-            mainDiamond.scale.setScalar(pulse);
-            mainDiamond.rotation.y += dt * 2;
-            mainDiamond.rotation.x += dt;
-
-            // Orbiting crystals
-            crystals.forEach(c => {
-                c.userData.angle += dt * c.userData.speed;
-                const a = c.userData.angle;
-                c.position.x = Math.cos(a) * c.userData.radius;
-                c.position.z = Math.sin(a) * c.userData.radius;
-                c.position.y = c.userData.yOff + Math.sin(time * 2 + a) * 0.3;
-                c.scale.setScalar(0.6 + Math.sin(time * 5 + a) * 0.4);
-            });
-
-            // --- Galaxy rotation ---
-            galaxy.rotation.y += dt * 0.04;
-            galaxy.rotation.z += dt * 0.02;
-
-            // --- Firefly swarms — organic motion ---
-            swarms.forEach(swarm => {
-                const ud = swarm.userData;
-                ud.center.x += Math.sin(time * ud.speed + ud.phase) * dt * ud.amplitude * 0.5;
-                ud.center.y += Math.cos(time * ud.speed * 0.7 + ud.phase) * dt * ud.amplitude * 0.3;
-                ud.center.z += Math.cos(time * ud.speed * 0.5 + ud.phase + 1) * dt * ud.amplitude * 0.4;
-
-                const pos = swarm.geometry.attributes.position.array;
-                for (let i = 0; i < pos.length / 3; i++) {
-                    pos[i * 3] += (ud.center.x + (Math.sin(time * 3 + i) * 2) - pos[i * 3]) * 0.02;
-                    pos[i * 3 + 1] += (ud.center.y + (Math.cos(time * 2.5 + i) * 1.5) - pos[i * 3 + 1]) * 0.02;
-                    pos[i * 3 + 2] += (ud.center.z + (Math.cos(time * 3.3 + i) * 2) - pos[i * 3 + 2]) * 0.02;
-                }
-                swarm.geometry.attributes.position.needsUpdate = true;
-
-                // Swarm opacity follows ring opacity
-                swarm.material.opacity += (ringOpacityTarget * 0.7 - swarm.material.opacity) * 0.03;
-            });
-
-            // --- Heart constellation — form every 8 seconds ---
-            heartFormTimer += dt;
-            const heartCycle = 8;
-            const heartFormDuration = 2;
-            const heartHoldDuration = 2.5;
-            const phaseInCycle = heartFormTimer % heartCycle;
-
-            let heartMix = 0; // 0 = scattered, 1 = heart shape
-            if (phaseInCycle < heartFormDuration) {
-                heartMix = phaseInCycle / heartFormDuration; // forming
-                if (!heartVisible) { heartVisible = true; }
-            } else if (phaseInCycle < heartFormDuration + heartHoldDuration) {
-                heartMix = 1; // holding
-            } else if (phaseInCycle < heartFormDuration * 2 + heartHoldDuration) {
-                heartMix = 1 - (phaseInCycle - heartFormDuration - heartHoldDuration) / heartFormDuration; // dispersing
-            } else {
-                heartMix = 0;
-                heartVisible = false;
+            // Sparkles twinkle — each particle pulses independently via the position array
+            const sparklePosArr = sparkles.geometry.attributes.position.array;
+            for (let i = 0; i < Math.min(sparkleCount, sparklePosArr.length / 3); i++) {
+                // Gentle upward drift
+                sparklePosArr[i * 3 + 1] += dt * (0.05 + Math.sin(i) * 0.03);
+                // Wrap
+                if (sparklePosArr[i * 3 + 1] > 14) sparklePosArr[i * 3 + 1] = -14;
             }
+            sparkles.geometry.attributes.position.needsUpdate = true;
 
-            // Apply heart morph
-            const hPos = heartMesh.geometry.attributes.position.array;
-            for (let i = 0; i < heartCount; i++) {
-                hPos[i * 3] = heartRandom[i * 3] + (heartPositions[i * 3] - heartRandom[i * 3]) * heartMix;
-                hPos[i * 3 + 1] = heartRandom[i * 3 + 1] + (heartPositions[i * 3 + 1] - heartRandom[i * 3 + 1]) * heartMix;
-                hPos[i * 3 + 2] = heartRandom[i * 3 + 2] + (heartPositions[i * 3 + 2] - heartRandom[i * 3 + 2]) * heartMix;
-            }
-            heartMesh.geometry.attributes.position.needsUpdate = true;
+            // --- Sunlight position slowly orbits ---
+            const sunAngle = time * 0.08;
+            sunLight.position.x = 12 + Math.sin(sunAngle) * 4;
+            sunLight.position.z = 8 + Math.cos(sunAngle) * 4;
+            rimLight.intensity = 1.0 + Math.sin(time * 0.5) * 0.5;
 
-            // --- Date group float ---
-            dateGroup.position.y += (-6 + Math.sin(time * 0.5) * 1.5 - dateGroup.position.y) * 0.02;
-            dateGroup.rotation.y += dt * 0.1;
+            // --- Ribbon group subtle rotation ---
+            ribbonGroup.rotation.y += dt * 0.02;
 
             renderer.render(scene, camera);
         }
 
+        // --- Resize ---
         window.addEventListener('resize', () => {
             const w = window.innerWidth, h = window.innerHeight;
-            camera.aspect = w / h; camera.updateProjectionMatrix();
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
             renderer.setSize(w, h);
         });
 
         animate();
-        console.log('💒 Three.js dramatic scene v4 live');
+        console.log('🌈 Rainbow silk ribbons scene live —', ribbonColors.length, 'ribbons,', sparkleCount, 'sparkles');
     }
 
     initWhenReady();

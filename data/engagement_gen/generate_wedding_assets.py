@@ -213,7 +213,7 @@ DETAIL: The invitation card can have subtle decorative elements (gold border, sm
     "cartoon_couple_guide": {
         "input": PHOTO_BACK,
         "output": "cartoon_couple_guide.png",
-        "size": "800x800",
+        "size": "1024x1024",
         "prompt": CARTOON_STYLE_RULES + """
 
 SPECIFIC SCENE:
