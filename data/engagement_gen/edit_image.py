@@ -19,8 +19,11 @@ import asyncio
 import base64
 import json
 import os
+import tempfile
 
 import aiohttp
+import cv2
+import numpy as np
 from dotenv import load_dotenv
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -167,6 +170,166 @@ def _content_type_for(path: str) -> str:
     if ext == ".webp":
         return "image/webp"
     return "application/octet-stream"
+
+
+# ---- Image Merge Utilities (CV2) ---------------------------------
+def merge_images(
+    image_paths: list[str],
+    output_path: str | None = None,
+    max_size_per_image: int = 768,
+    border: int = 8,
+    border_color: tuple[int, int, int] = (255, 255, 255),
+    layout: str = "auto",
+) -> str:
+    """用 CV2 将多张图片拼接成一张大图（grid 布局）。
+
+    Args:
+        image_paths: 图片路径列表
+        output_path: 输出路径，为 None 则写入临时文件
+        max_size_per_image: 每张子图的最长边像素上限
+        border: 子图之间的白色分隔边框宽度
+        border_color: 边框 BGR 颜色，默认白色
+        layout: "auto" 自动选 grid / "horizontal" 水平排列 / "vertical" 垂直排列
+
+    Returns:
+        拼接后图片的文件路径
+    """
+    if not image_paths:
+        raise ValueError("至少需要一张图片")
+    if len(image_paths) == 1:
+        # 单张图直接复制
+        if output_path is None:
+            _, output_path = tempfile.mkstemp(suffix=".jpg", prefix="merged_")
+        img = cv2.imread(image_paths[0])
+        if img is None:
+            raise ValueError(f"无法读取图片: {image_paths[0]}")
+        cv2.imwrite(output_path, img)
+        return output_path
+
+    images = []
+    for p in image_paths:
+        img = cv2.imread(p)
+        if img is None:
+            raise ValueError(f"无法读取图片: {p}")
+        # 等比缩放
+        h, w = img.shape[:2]
+        longest = max(h, w)
+        if longest > max_size_per_image:
+            scale = max_size_per_image / longest
+            new_w, new_h = int(w * scale), int(h * scale)
+            img = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_LANCZOS4)
+        images.append(img)
+
+    n = len(images)
+
+    if layout == "horizontal":
+        # 统一高度，水平拼接
+        target_h = min(img.shape[0] for img in images)
+        resized = []
+        for img in images:
+            h, w = img.shape[:2]
+            scale = target_h / h
+            nw, nh = int(w * scale), target_h
+            resized.append(cv2.resize(img, (nw, nh), interpolation=cv2.INTER_LANCZOS4))
+        # 加分隔线
+        rows = [target_h]
+        bordered = []
+        for i, img in enumerate(resized):
+            b_img = img
+            if i > 0:
+                # 左侧加白色分隔条
+                sep = np.full((target_h, border, 3), border_color, dtype=np.uint8)
+                b_img = np.hstack([sep, img])
+            bordered.append(b_img)
+        merged = np.hstack(bordered)
+
+    elif layout == "vertical":
+        # 统一宽度，垂直拼接
+        target_w = min(img.shape[1] for img in images)
+        resized = []
+        for img in images:
+            h, w = img.shape[:2]
+            scale = target_w / w
+            nw, nh = target_w, int(h * scale)
+            resized.append(cv2.resize(img, (nw, nh), interpolation=cv2.INTER_LANCZOS4))
+        bordered = []
+        for i, img in enumerate(resized):
+            b_img = img
+            if i > 0:
+                sep = np.full((border, target_w, 3), border_color, dtype=np.uint8)
+                b_img = np.vstack([sep, img])
+            bordered.append(b_img)
+        merged = np.vstack(bordered)
+
+    else:
+        # "auto" — 自动选择 grid 布局
+        import math
+        cols = min(n, 3)  # 最多 3 列
+        rows = math.ceil(n / cols)
+
+        # 统一每列宽度和每行高度
+        col_widths = [0] * cols
+        row_heights = [0] * rows
+        for idx, img in enumerate(images):
+            r, c = idx // cols, idx % cols
+            h, w = img.shape[:2]
+            col_widths[c] = max(col_widths[c], w)
+            row_heights[r] = max(row_heights[r], h)
+
+        total_w = sum(col_widths) + border * (cols - 1)
+        total_h = sum(row_heights) + border * (rows - 1)
+        merged = np.full((total_h, total_w, 3), border_color, dtype=np.uint8)
+
+        y_offset = 0
+        for r in range(rows):
+            x_offset = 0
+            for c in range(cols):
+                idx = r * cols + c
+                if idx >= n:
+                    break
+                img = images[idx]
+                h, w = img.shape[:2]
+                # 居中放置在格子里
+                pad_left = (col_widths[c] - w) // 2
+                pad_top = (row_heights[r] - h) // 2
+                merged[y_offset + pad_top:y_offset + pad_top + h,
+                       x_offset + pad_left:x_offset + pad_left + w] = img
+                x_offset += col_widths[c] + border
+            y_offset += row_heights[r] + border
+
+    if output_path is None:
+        _, output_path = tempfile.mkstemp(suffix=".jpg", prefix="merged_refs_")
+    cv2.imwrite(output_path, merged, [cv2.IMWRITE_JPEG_QUALITY, 95])
+    print(f"   🧩 已拼接 {n} 张参考图 → {os.path.basename(output_path)} ({merged.shape[1]}x{merged.shape[0]})")
+    return output_path
+
+
+async def edit_image_multi_ref(
+    image_paths: list[str],
+    prompt: str = "",
+    size: str = "1024x1024",
+    merge_max_size: int = 768,
+) -> tuple[str, object]:
+    """拼接多张参考图为一张后调用 /images/edits。
+
+    Args:
+        image_paths: 多张参考图路径列表
+        prompt: 编辑指令
+        size: 输出尺寸
+        merge_max_size: 每张子图缩放的最长边
+
+    Returns:
+        同 edit_image: ("bytes", bytes) | ("url", str) | ("error", str)
+    """
+    merged_path = merge_images(image_paths, max_size_per_image=merge_max_size)
+    try:
+        return await edit_image(merged_path, prompt=prompt, size=size)
+    finally:
+        # 清理临时文件
+        try:
+            os.unlink(merged_path)
+        except OSError:
+            pass
 
 
 async def edit_image(image_path: str, prompt: str = "", size: str = "2048x3072") -> tuple[str, object]:
