@@ -8,7 +8,10 @@
     'use strict';
 
     function initWhenReady() {
-        if (typeof THREE === 'undefined') { setTimeout(initWhenReady, 200); return; }
+        if (typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined') {
+            setTimeout(initWhenReady, 200);
+            return;
+        }
         startScene();
     }
 
@@ -242,6 +245,77 @@
         scene.add(shadowPlane);
 
         // ============================================================
+        // 3D MODEL — Golden Hour Hippo Wedding
+        // ============================================================
+        let hippoModel = null;
+        let hippoMixer = null;
+        const hippoGroup = new THREE.Group();
+        scene.add(hippoGroup);
+
+        const gltfLoader = new THREE.GLTFLoader();
+        gltfLoader.load(
+            '/img/hippo_wedding.glb',
+            (gltf) => {
+                hippoModel = gltf.scene;
+
+                // Auto-scale: fit model to ~5 units tall
+                const box = new THREE.Box3().setFromObject(hippoModel);
+                const size = box.getSize(new THREE.Vector3());
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const targetSize = 6;
+                const scale = targetSize / maxDim;
+                hippoModel.scale.setScalar(scale);
+
+                // Center the model
+                const center = box.getCenter(new THREE.Vector3());
+                hippoModel.position.set(
+                    -center.x * scale,
+                    -center.y * scale + 2.5,  // float above center
+                    -center.z * scale - 6       // behind content
+                );
+
+                // Enable shadows on all meshes
+                hippoModel.traverse((child) => {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                });
+
+                // Handle animations
+                if (gltf.animations && gltf.animations.length > 0) {
+                    hippoMixer = new THREE.AnimationMixer(hippoModel);
+                    gltf.animations.forEach((clip) => {
+                        hippoMixer.clipAction(clip).play();
+                    });
+                }
+
+                hippoGroup.add(hippoModel);
+
+                // Fade in
+                hippoModel.traverse((child) => {
+                    if (child.isMesh && child.material) {
+                        child.material.transparent = true;
+                        child.material.opacity = 0;
+                    }
+                });
+
+                console.log('🦛 Hippo model loaded!',
+                    'animations:', gltf.animations ? gltf.animations.length : 0,
+                    'size:', size.toArray().map(v => v.toFixed(2)));
+            },
+            (progress) => {
+                if (progress.total > 0) {
+                    const pct = Math.round((progress.loaded / progress.total) * 100);
+                    console.log('🦛 Loading hippo...', pct + '%');
+                }
+            },
+            (error) => {
+                console.warn('⚠️ Hippo model failed to load:', error);
+            }
+        );
+
+        // ============================================================
         // SECTION DETECTION
         // ============================================================
         const sections = ['hero', 'invitation', 'countdown', 'story', 'schedule', 'venue', 'gallery', 'rsvp'];
@@ -384,6 +458,25 @@
 
             // --- Ribbon group subtle rotation ---
             ribbonGroup.rotation.y += dt * 0.02;
+
+            // --- Hippo model animation ---
+            if (hippoModel) {
+                // Gentle float + slow rotation
+                hippoGroup.rotation.y += dt * 0.15;
+                hippoGroup.position.y = Math.sin(time * 0.6) * 0.5;
+
+                // Fade in model
+                hippoModel.traverse((child) => {
+                    if (child.isMesh && child.material && child.material.opacity < 1) {
+                        child.material.opacity = Math.min(1, child.material.opacity + dt * 0.5);
+                    }
+                });
+
+                // Update animation mixer
+                if (hippoMixer) {
+                    hippoMixer.update(dt);
+                }
+            }
 
             renderer.render(scene, camera);
         }
