@@ -8,7 +8,7 @@
     'use strict';
 
     function initWhenReady() {
-        if (typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined' || typeof THREE.DRACOLoader === 'undefined') {
+        if (typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined') {
             setTimeout(initWhenReady, 200);
             return;
         }
@@ -263,12 +263,7 @@
         let pageHeight = 1;
         let scrollProgress = 0;
 
-        // DRACOLoader for decompressing Draco-compressed geometry
-        const dracoLoader = new THREE.DRACOLoader();
-        dracoLoader.setDecoderPath(THREE.DRACO_DECODER_PATH || 'https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/libs/draco/');
-
         const gltfLoader = new THREE.GLTFLoader();
-        gltfLoader.setDRACOLoader(dracoLoader);
         const modelPath = '/img/%E5%99%9C%E5%99%9C%E5%92%8C%E5%99%9C%E5%A6%B9%E7%9A%84%E7%BB%93%E5%A9%9A%E5%A9%9A%E7%BA%B1%E7%85%A7_compressed.glb';
 
         gltfLoader.load(
