@@ -19,18 +19,20 @@
         const container = document.getElementById('threeBg');
         if (!container) return;
 
-        const isMobile = /Android|iPhone|iPad|iPod|webOS/i.test(navigator.userAgent)
-            || window.innerWidth < 768;
+        // Use container's actual rendered size (accounts for scrollbar, etc.)
+        const rect = container.getBoundingClientRect();
+        const W = rect.width || window.innerWidth;
+        const H = rect.height || window.innerHeight;
 
-        const W = window.innerWidth;
-        const H = window.innerHeight;
+        const isMobile = /Android|iPhone|iPad|iPod|webOS/i.test(navigator.userAgent)
+            || W < 768;
 
         // --- Scene ---
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0xfdf8f2);
         scene.fog = new THREE.Fog(0xfdf8f2, 8, 50);
 
-        const camera = new THREE.PerspectiveCamera(50, W / H, 0.1, 100);
+        const camera = new THREE.PerspectiveCamera(50, W / Math.max(H, 1), 0.1, 100);
         camera.position.set(0, 1.5, 12);
         camera.lookAt(0, 0.5, 0);
 
@@ -41,7 +43,7 @@
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 1.1;
-        renderer.domElement.style.cssText = 'position:absolute;top:0;left:0;';
+        renderer.domElement.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;';
         container.appendChild(renderer.domElement);
         container.setAttribute('data-three', 'active');
 
@@ -548,7 +550,10 @@
         // RESIZE
         // ============================================================
         window.addEventListener('resize', () => {
-            const w = window.innerWidth, h = window.innerHeight;
+            const rect = container.getBoundingClientRect();
+            const w = rect.width || window.innerWidth;
+            const h = rect.height || window.innerHeight;
+            if (w <= 0 || h <= 0) return;
             camera.aspect = w / h;
             camera.updateProjectionMatrix();
             renderer.setSize(w, h);
@@ -562,5 +567,6 @@
         console.log('💒 Wedding 3D scene live — scroll to spin the model! ✨');
     }
 
-    initWhenReady();
+    // Delay init by one frame to ensure layout is fully settled
+    requestAnimationFrame(() => { initWhenReady(); });
 })();
