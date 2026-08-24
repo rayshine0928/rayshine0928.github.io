@@ -22,7 +22,7 @@
     }
 
     function setAll(d,h,m,s) {
-        ['cd','mcd'].forEach(pre => {
+        ['cd'].forEach(pre => {
             setEl(pre+'-days', d);
             setEl(pre+'-hours', pad(h));
             setEl(pre+'-mins', pad(m));

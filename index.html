@@ -47,20 +47,6 @@ layout: wedding
     </div>
 </section>
 
-<!-- ==================== COUNTDOWN ==================== -->
-<section class="countdown-section" id="countdown">
-    <div class="container">
-        <h2 class="section-title reveal">距离我们的婚礼还有</h2>
-        <div class="countdown-grid reveal" id="mainCountdown">
-            <div class="countdown-box"><div class="countdown-number" id="mcd-days">88</div><div class="countdown-unit">天</div></div>
-            <div class="countdown-box"><div class="countdown-number" id="mcd-hours">00</div><div class="countdown-unit">时</div></div>
-            <div class="countdown-box"><div class="countdown-number" id="mcd-mins">00</div><div class="countdown-unit">分</div></div>
-            <div class="countdown-box"><div class="countdown-number" id="mcd-secs">00</div><div class="countdown-unit">秒</div></div>
-        </div>
-        <p class="countdown-sub reveal">期待与您一同分享这份喜悦</p>
-    </div>
-</section>
-
 <!-- ==================== OUR STORY — 四格卡通连环画 ==================== -->
 <section class="story" id="story">
     <div class="container">
@@ -111,10 +97,9 @@ layout: wedding
             <div class="venue-info-card"><i class="fas fa-car"></i><h4>停车</h4><p>酒店提供免费停车场</p></div>
             <div class="venue-info-card"><i class="fas fa-subway"></i><h4>交通</h4><p>地铁1号线定安路站，打车约15分钟</p></div>
             <div class="venue-info-card"><i class="fas fa-hotel"></i><h4>住宿</h4><p>酒店提供宾客优惠住宿</p></div>
-            <div class="venue-info-card">
-                <i class="fas fa-map"></i><h4>导航</h4><p>杭州西湖 · 三台山路149号</p>
-                <a href="https://uri.amap.com/marker?position=120.137,30.234&name=六通宾馆" target="_blank" class="btn-map">打开地图 <i class="fas fa-external-link-alt"></i></a>
-            </div>
+        </div>
+        <div class="venue-map-cta reveal">
+            <a href="https://uri.amap.com/marker?position=120.137,30.234&name=六通宾馆" target="_blank" class="btn-map">杭州西湖 · 三台山路149号 · 打开地图导航 <i class="fas fa-external-link-alt"></i></a>
         </div>
     </div>
 </section>
@@ -124,17 +109,9 @@ layout: wedding
     <div class="container">
         <h2 class="section-title reveal">婚礼流程</h2>
         <p class="section-subtitle reveal">Wedding Day</p>
-        <div class="schedule-icons-row reveal">
-            <img src="{{ '/img/cartoon_schedule_icons.png' | relative_url }}" alt="婚礼流程">
-        </div>
         <div class="schedule-timeline reveal">
-            <div class="sched-item"><div class="sched-time">09:00</div><div class="sched-dot"></div><div class="sched-content"><h4>💐 迎亲 · 接亲</h4><p>新郎迎接新娘，开启幸福的一天</p></div></div>
-            <div class="sched-item"><div class="sched-time">10:30</div><div class="sched-dot"></div><div class="sched-content"><h4>🍵 敬茶仪式</h4><p>向双方父母敬茶，感恩养育之恩</p></div></div>
-            <div class="sched-item"><div class="sched-time">13:00</div><div class="sched-dot"></div><div class="sched-content"><h4>📸 外景拍摄</h4><p>西湖畔，留下最美的婚纱记忆</p></div></div>
             <div class="sched-item"><div class="sched-time">17:00</div><div class="sched-dot"></div><div class="sched-content"><h4>💒 婚礼仪式</h4><p>交换誓言与戒指，见证爱的承诺</p></div></div>
             <div class="sched-item"><div class="sched-time">18:18</div><div class="sched-dot"></div><div class="sched-content"><h4>🍽️ 婚宴晚宴</h4><p>精致中式宴席，共享美食与欢笑</p></div></div>
-            <div class="sched-item"><div class="sched-time">19:00</div><div class="sched-dot"></div><div class="sched-content"><h4>🎵 After Party</h4><p>音乐、舞蹈与祝福，尽情欢庆</p></div></div>
-            <div class="sched-item"><div class="sched-time">20:30</div><div class="sched-dot"></div><div class="sched-content"><h4>🎊 欢送宾客</h4><p>感谢每一位亲友的到来与祝福</p></div></div>
         </div>
     </div>
 </section>
@@ -146,14 +123,9 @@ layout: wedding
         <p class="section-subtitle reveal">RSVP</p>
         <div class="rsvp-card reveal">
             <p class="rsvp-intro">您的出席将是我们最珍贵的礼物</p>
-            <div class="rsvp-contacts">
-                <div class="rsvp-contact"><i class="fas fa-phone"></i><span>新郎 — 李笑然：XXX-XXXX-XXXX</span></div>
-                <div class="rsvp-contact"><i class="fas fa-phone"></i><span>新娘 — 严瑞：XXX-XXXX-XXXX</span></div>
-                <div class="rsvp-contact"><i class="fas fa-envelope"></i><span>wedding@0928.love</span></div>
-            </div>
             <div class="rsvp-qr">
-                <div class="qr-placeholder"><i class="fab fa-weixin"></i><span>微信联系</span></div>
-                <p>扫码添加微信，获取最新婚礼资讯</p>
+                <img src="{{ '/img/rsvp_qr.png' | relative_url }}" alt="出席登记二维码" class="qr-img">
+                <p>打开手机扫一扫 · 登记出席</p>
             </div>
         </div>
     </div>
