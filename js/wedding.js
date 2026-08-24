@@ -7,41 +7,36 @@
 
     /* ========================================================
        COUNTDOWN — Target: 2026-09-28 17:00 CST
+       只保留"剩余天数"，作为请柬卡内的一行小胶囊
        ======================================================== */
     const WEDDING = new Date('2026-09-28T17:00:00+08:00');
+    const cdPill = document.getElementById('countdownPill');
 
     function tick() {
+        if (!cdPill) return;
         const diff = WEDDING - Date.now();
-        if (diff <= 0) { setAll(0,0,0,0); return; }
-        setAll(
-            Math.floor(diff / 864e5),
-            Math.floor((diff / 36e5) % 24),
-            Math.floor((diff / 6e4) % 60),
-            Math.floor((diff / 1e3) % 60)
-        );
-    }
-
-    function setAll(d,h,m,s) {
-        ['cd'].forEach(pre => {
-            setEl(pre+'-days', d);
-            setEl(pre+'-hours', pad(h));
-            setEl(pre+'-mins', pad(m));
-            setEl(pre+'-secs', pad(s));
-        });
-    }
-
-    function setEl(id, v) {
-        const el = document.getElementById(id);
-        if (el && el.textContent !== String(v)) {
-            el.textContent = v;
-            el.style.transform = 'scale(1.12)';
-            el.style.transition = 'transform .12s ease';
-            requestAnimationFrame(() => el.style.transform = 'scale(1)');
+        if (diff <= 0) {
+            cdPill.innerHTML = '<i class="fas fa-champagne-glasses"></i> 婚礼进行中，感谢见证 ❤';
+            clearInterval(cdTimer);
+            return;
+        }
+        const days = Math.floor(diff / 864e5);
+        if (days === 0) {
+            cdPill.innerHTML = '<i class="fas fa-champagne-glasses"></i> 婚礼就在今天！';
+            clearInterval(cdTimer);
+            return;
+        }
+        const num = cdPill.querySelector('.cd-days-num');
+        if (num && num.textContent !== String(days)) {
+            num.textContent = days;
+            num.style.transform = 'scale(1.15)';
+            num.style.transition = 'transform .12s ease';
+            requestAnimationFrame(() => num.style.transform = 'scale(1)');
         }
     }
 
-    function pad(n) { return String(n).padStart(2,'0'); }
-    tick(); setInterval(tick, 1000);
+    const cdTimer = setInterval(tick, 60000);
+    tick();
 
     /* ========================================================
        PARALLAX SCROLLING

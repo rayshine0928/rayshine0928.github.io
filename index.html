@@ -2,21 +2,15 @@
 layout: wedding
 ---
 
-<!-- ==================== HERO — 噜噜噜妹卡通婚礼 ==================== -->
+<!-- ==================== HERO — 3D 橱窗：文字作框，中央留给模型 ==================== -->
 <section class="hero" id="hero">
-    <div class="hero-content">
-        <h1 class="hero-title reveal">李笑然 <span class="hero-and">&</span> 严瑞</h1>
-        <p class="hero-subtitle reveal">We're Getting Married</p>
-        <p class="hero-date reveal">2026 · 09 · 28</p>
-        <div class="hero-countdown reveal" id="heroCountdown">
-            <div class="cd-item"><span class="cd-num" id="cd-days">88</span><span class="cd-label">Days</span></div>
-            <div class="cd-sep">·</div>
-            <div class="cd-item"><span class="cd-num" id="cd-hours">00</span><span class="cd-label">Hours</span></div>
-            <div class="cd-sep">·</div>
-            <div class="cd-item"><span class="cd-num" id="cd-mins">00</span><span class="cd-label">Mins</span></div>
-            <div class="cd-sep">·</div>
-            <div class="cd-item"><span class="cd-num" id="cd-secs">00</span><span class="cd-label">Secs</span></div>
-        </div>
+    <div class="hero-top reveal">
+        <p class="hero-eyebrow">We're Getting Married</p>
+        <p class="hero-eyebrow-cn">我们要结婚了</p>
+    </div>
+    <div class="hero-bottom reveal">
+        <p class="hero-date">2026 · 09 · 28</p>
+        <p class="hero-place">杭州 · 西湖 · 六通宾馆</p>
     </div>
     <div class="scroll-hint">
         <span>向下探索我们的故事</span>
@@ -39,6 +33,9 @@ layout: wedding
                     <div class="inv-detail"><i class="fas fa-map-marker-alt"></i><span>杭州市西湖区三台山路149号 · 六通宾馆</span></div>
                 </div>
                 <p class="invitation-closing">执子之手，与子偕老</p>
+                <p class="invitation-countdown" id="countdownPill">
+                    <i class="far fa-hourglass-half"></i>距婚礼还有 <span class="cd-days-num" id="cd-days">35</span> 天
+                </p>
             </div>
             <div class="invitation-cartoon" data-parallax="0.75">
                 <img src="{{ '/img/cartoon_invitation.png' | relative_url }}" alt="请柬">

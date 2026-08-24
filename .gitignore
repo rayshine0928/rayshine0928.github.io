@@ -1,7 +1,9 @@
 _site/
 .DS_Store
+.bundle/
 *.pyc
 __pycache__/
+img/*.bak.png
 data/engagement_gen/.venv/
 data/engagement_gen/outputs/
 data/engagement_gen/templates/
