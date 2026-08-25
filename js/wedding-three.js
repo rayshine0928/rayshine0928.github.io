@@ -19,6 +19,33 @@
         const container = document.getElementById('threeBg');
         if (!container) return;
 
+        // --- Loading indicator wiring ---
+        const loader = document.getElementById('modelLoader');
+        const loaderText = document.getElementById('loaderText');
+        const loaderBar = document.getElementById('loaderBar');
+        const loaderPct = document.getElementById('loaderPct');
+        let loaderGone = false;
+
+        function dismissLoader(msg) {
+            if (!loader || loaderGone) return;
+            loaderGone = true;
+            if (msg && loaderText) loaderText.textContent = msg;
+            loader.classList.add('done');
+            setTimeout(() => loader.remove(), 900);
+        }
+
+        function stallLoader(msg) {
+            if (!loader || loaderGone) return;
+            if (loaderText) loaderText.textContent = msg;
+            loader.classList.add('stalled');
+            setTimeout(() => dismissLoader(), 2600);
+        }
+
+        if (loader) {
+            loader.classList.add('loading-model');
+            if (loaderText) loaderText.textContent = '正在加载我们的 3D 形象';
+        }
+
         // Use container's actual rendered size (accounts for scrollbar, etc.)
         const rect = container.getBoundingClientRect();
         const W = rect.width || window.innerWidth;
@@ -36,7 +63,15 @@
         camera.position.set(0, 1.5, 12);
         camera.lookAt(0, 0.5, 0);
 
-        const renderer = new THREE.WebGLRenderer({ alpha: false, antialias: !isMobile });
+        let renderer;
+        try {
+            renderer = new THREE.WebGLRenderer({ alpha: false, antialias: !isMobile });
+        } catch (err) {
+            // WebGL 不可用（老旧设备/禁用硬件加速）：温柔退场，不让加载指示永远转圈
+            console.warn('⚠️ WebGL unavailable:', err);
+            stallLoader('当前浏览器暂不支持 3D 展示，往下看看吧');
+            return;
+        }
         renderer.setSize(W, H);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.shadowMap.enabled = !isMobile;
@@ -277,7 +312,9 @@
                 const box = new THREE.Box3().setFromObject(weddingModel);
                 const size = box.getSize(new THREE.Vector3());
                 const maxDim = Math.max(size.x, size.y, size.z);
-                const targetSize = isMobile ? 5 : 7;
+                // 竖屏水平视场很窄，模型占满屏宽会显得偏心/裁切，按宽高比再收缩
+                const aspect = W / Math.max(H, 1);
+                const targetSize = (isMobile ? 5 : 7) * (aspect < 1 ? Math.min(1, aspect * 1.3) : 1);
                 const scale = targetSize / maxDim;
                 weddingModel.scale.setScalar(scale);
 
@@ -319,17 +356,28 @@
                 console.log('💒 Wedding model loaded!',
                     'animations:', gltf.animations ? gltf.animations.length : 0,
                     'size:', size.toArray().map(v => v.toFixed(2)));
+
+                // Model is in place — fade the loader away
+                dismissLoader();
             },
             (progress) => {
                 if (progress.total > 0) {
-                    const pct = Math.round((progress.loaded / progress.total) * 100);
+                    const pct = Math.min(100, Math.round((progress.loaded / progress.total) * 100));
                     console.log('💒 Loading wedding model...', pct + '%');
+                    if (loaderBar) loaderBar.style.width = pct + '%';
+                    if (loaderPct) loaderPct.textContent = pct;
                 }
             },
             (error) => {
                 console.warn('⚠️ Wedding model failed to load:', error);
+                stallLoader('3D 形象加载失败，先看看其他内容吧');
             }
         );
+
+        // 保险丝：长时间无结果时温柔退场，不让加载指示卡在页面上
+        setTimeout(() => {
+            if (!weddingModel) stallLoader('网络有点慢，3D 形象还在路上，先逛逛吧');
+        }, 60000);
 
         // ============================================================
         // SCROLL-DRIVEN ANIMATION LOGIC
@@ -375,6 +423,11 @@
             const t = e.touches[0];
             mouse.tx = (t.clientX / window.innerWidth) * 2 - 1;
             mouse.ty = -(t.clientY / window.innerHeight) * 2 + 1;
+        }, { passive: true });
+        // 抬手后视差回中，避免移动端滚动后模型残留横向偏移
+        document.addEventListener('touchend', () => {
+            mouse.tx = 0;
+            mouse.ty = 0;
         }, { passive: true });
 
         // ============================================================

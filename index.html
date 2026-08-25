@@ -12,6 +12,17 @@ layout: wedding
         <p class="hero-date">2026 · 09 · 28</p>
         <p class="hero-place">杭州 · 西湖 · 六通宾馆</p>
     </div>
+    <!-- 3D 形象加载指示器：模型就位后自动淡出 -->
+    <div class="hero-loader" id="modelLoader" role="status" aria-live="polite">
+        <div class="loader-rings">
+            <span class="ring ring-a"></span>
+            <span class="ring ring-b"></span>
+            <i class="fas fa-heart loader-heart"></i>
+        </div>
+        <p class="loader-text"><span id="loaderText">正在唤醒 3D 场景</span><span class="loader-dots"></span></p>
+        <div class="loader-bar"><span id="loaderBar"></span></div>
+        <p class="loader-pct"><span id="loaderPct">0</span>%</p>
+    </div>
     <div class="scroll-hint">
         <span>向下探索我们的故事</span>
         <div class="scroll-line"></div>

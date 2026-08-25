@@ -74,6 +74,29 @@ ul { list-style: none; }
 @keyframes scrollPulse { 0%,100% { opacity: .3; transform: scaleY(.8); } 50% { opacity: 1; transform: scaleY(1); } }
 
 /* ============================================================
+   HERO LOADER — 3D 形象加载指示
+   双环反向旋转 + 心跳 + 动态省略号 + 进度条，模型就位即淡出
+   ============================================================ */
+.hero-loader { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 16px; pointer-events: none; transition: opacity .8s ease, transform .8s ease; }
+.hero-loader.done { opacity: 0; transform: translate(-50%, -54%) scale(.92); }
+.hero-loader.stalled .loader-rings, .hero-loader.stalled .loader-bar, .hero-loader.stalled .loader-pct { opacity: 0; transition: opacity .4s; }
+.loader-rings { position: relative; width: 88px; height: 88px; }
+.loader-rings .ring { position: absolute; border-radius: 50%; border: 2px solid transparent; }
+.loader-rings .ring-a { inset: 0; border-top-color: var(--rose); border-right-color: rgba(183,110,121,.3); animation: loaderSpin 1.5s linear infinite; }
+.loader-rings .ring-b { inset: 13px; border-bottom-color: var(--gold); border-left-color: rgba(212,165,116,.3); animation: loaderSpin 2.1s linear infinite reverse; }
+.loader-heart { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--rose); font-size: 1.05rem; animation: heartBeat 1.5s ease-in-out infinite; }
+.loader-text { font-family: var(--font-cn); font-size: .9rem; letter-spacing: .14em; color: var(--brown-light); text-shadow: 0 1px 12px rgba(253,248,242,.9); }
+.loader-dots::after { content: ''; display: inline-block; width: 1.2em; text-align: left; animation: loaderDots 1.8s infinite; }
+.loader-bar { width: 160px; height: 3px; border-radius: 3px; background: rgba(183,110,121,.14); overflow: hidden; opacity: 0; transition: opacity .5s; }
+.loader-bar span { display: block; height: 100%; width: 0; border-radius: 3px; background: linear-gradient(to right, var(--rose), var(--gold)); transition: width .35s ease; }
+.loader-pct { font-family: var(--font-en); font-size: .82rem; letter-spacing: .12em; color: var(--rose); opacity: 0; transition: opacity .5s; margin-top: -6px; }
+.hero-loader.loading-model .loader-bar, .hero-loader.loading-model .loader-pct { opacity: 1; }
+@keyframes loaderSpin { to { transform: rotate(360deg); } }
+@keyframes heartBeat { 0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: .7; } 50% { transform: translate(-50%, -50%) scale(1.22); opacity: 1; } }
+@keyframes loaderDots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } }
+@media (prefers-reduced-motion: reduce) { .loader-rings .ring-a, .loader-rings .ring-b, .loader-heart, .loader-dots::after { animation: none; } }
+
+/* ============================================================
    SECTION SPACING
    ============================================================ */
 .invitation, .story, .gallery, .venue, .schedule, .rsvp { padding: 100px 0; position: relative; z-index: 1; }

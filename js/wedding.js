@@ -39,6 +39,23 @@
     tick();
 
     /* ========================================================
+       3D LOADER WATCHDOG — three.js CDN 失联时温柔退场
+       若 35 秒后加载指示器仍在"唤醒场景"阶段（CDN 没连上），
+       换成提示文案并淡出，不让它永远转圈
+       ======================================================== */
+    setTimeout(() => {
+        const loader = document.getElementById('modelLoader');
+        if (!loader || loader.classList.contains('done') || loader.classList.contains('loading-model')) return;
+        const txt = document.getElementById('loaderText');
+        if (txt) txt.textContent = '3D 场景暂时连不上，不影响浏览其余内容';
+        loader.classList.add('stalled');
+        setTimeout(() => {
+            loader.classList.add('done');
+            setTimeout(() => loader.remove(), 900);
+        }, 2600);
+    }, 35000);
+
+    /* ========================================================
        PARALLAX SCROLLING
        ======================================================== */
     const parallaxEls = document.querySelectorAll('[data-parallax]');
