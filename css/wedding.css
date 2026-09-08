@@ -13,14 +13,35 @@
     --font-en: 'Playfair Display', 'Cormorant Garamond', serif;
     --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --nav-h: 70px; --max-w: 1200px;
-    /* iOS frosted glass — 半透明白 + 深模糊 + 提饱和 + 香槟金发丝边 + 上下内高光 */
-    --glass-bg: rgba(255,255,255,.44);
-    --glass-bg-strong: rgba(255,255,255,.6);
-    --glass-border: rgba(255,255,255,.6);
-    --glass-blur: blur(32px) saturate(190%);
-    --glass-shadow: 0 24px 70px rgba(61,44,44,.16), inset 0 1px 0 rgba(255,255,255,.7), inset 0 -1px 0 rgba(255,255,255,.22);
-    /* 香槟金流光发丝边：border 层渐变，padding 层玻璃底色 */
-    --glass-edge: linear-gradient(135deg, rgba(255,255,255,.95), rgba(212,165,116,.6) 42%, rgba(255,255,255,.28));
+    /* iOS 26 Liquid Glass — 低不透明度渐变玻璃体 + 深模糊提亮 + conic 环边流光 + 多层光影
+       玻璃体：顶部受光较亮 → 中段最透（背景透出）→ 底部反光回升，附一道斜向高光带 */
+    --glass-bg: rgba(255,255,255,.3);
+    --glass-bg-strong: rgba(255,255,255,.42);
+    --glass-border: rgba(255,255,255,.5);
+    --glass-fill: linear-gradient(158deg,
+        rgba(255,255,255,.40) 0%, rgba(255,255,255,.16) 22%, rgba(255,255,255,.07) 46%,
+        rgba(255,255,255,.11) 68%, rgba(255,255,255,.24) 88%, rgba(255,255,255,.34) 100%);
+    --glass-scrim: linear-gradient(115deg,
+        transparent 0%, transparent 36%, rgba(255,255,255,.14) 44%, rgba(255,255,255,.03) 52%, transparent 60%);
+    --glass-blur: blur(28px) saturate(180%) brightness(1.08);
+    /* 外影两层（贴地小影 + 弥散大影）+ 边缘受光 + 内壁柔光，模拟玻璃厚度 */
+    --glass-shadow:
+        0 1px 2px rgba(61,44,44,.05),
+        0 22px 50px -14px rgba(61,44,44,.22),
+        inset 0 1px 1px rgba(255,255,255,.6),
+        inset 0 -1px 1px rgba(255,255,255,.3),
+        inset 1px 0 1px rgba(255,255,255,.16),
+        inset -1px 0 1px rgba(255,255,255,.16),
+        inset 0 0 34px rgba(255,255,255,.09);
+    /* 香槟金环边流光：conic 渐变绕边缘一周模拟光在斜面上折射游走，
+       再叠两枚角部镜面高光（玻璃曲率在角上聚光），均裁在 1px border 环内 */
+    --glass-edge:
+        radial-gradient(140% 90% at 6% 0%, rgba(255,255,255,.95), rgba(255,255,255,0) 55%),
+        radial-gradient(90% 140% at 100% 100%, rgba(255,255,255,.55), rgba(255,255,255,0) 50%),
+        conic-gradient(from 210deg at 50% 42%,
+            rgba(255,255,255,.95) 0deg, rgba(255,255,255,.30) 35deg, rgba(212,165,116,.55) 80deg,
+            rgba(255,255,255,.20) 130deg, rgba(255,255,255,.85) 180deg, rgba(255,255,255,.24) 225deg,
+            rgba(174,131,82,.45) 275deg, rgba(255,255,255,.30) 320deg, rgba(255,255,255,.95) 360deg);
     --gold-deep: #AE8352;
     --r-lg: 28px; --r-md: 18px;
 }
@@ -43,7 +64,7 @@ ul { list-style: none; }
    NAVIGATION
    ============================================================ */
 .nav { position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; padding: 0 24px; transition: .6s; }
-.nav.scrolled { background: rgba(255,255,255,.6); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-bottom: 1px solid rgba(255,255,255,.5); box-shadow: 0 4px 24px rgba(61,44,44,.07); }
+.nav.scrolled { background: linear-gradient(to bottom, rgba(255,255,255,.42), rgba(255,255,255,.22)); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-bottom: 1px solid rgba(255,255,255,.45); box-shadow: 0 1px 1px rgba(61,44,44,.03), 0 10px 30px -10px rgba(61,44,44,.12), inset 0 1px 0 rgba(255,255,255,.6); }
 .nav-inner { max-width: var(--max-w); margin: 0 auto; display: flex; justify-content: space-between; align-items: center; height: var(--nav-h); }
 .nav-logo { font-family: var(--font-en); font-size: 1.6rem; font-weight: 700; color: var(--brown); letter-spacing: .06em; transition: .6s; }
 .nav.scrolled .nav-logo { color: var(--rose); }
@@ -60,8 +81,8 @@ ul { list-style: none; }
    上层叠一条奶油色轻纱，压住高光、托起玻璃卡片
    ============================================================ */
 .site-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; background-color: var(--cream);
-    background-image: linear-gradient(to bottom, rgba(253,248,242,.34), rgba(253,248,242,.16) 28%, rgba(253,248,242,.16) 72%, rgba(253,248,242,.38)), url('../img/couple_portrait.jpg');
-    background-image: linear-gradient(to bottom, rgba(253,248,242,.34), rgba(253,248,242,.16) 28%, rgba(253,248,242,.16) 72%, rgba(253,248,242,.38)), image-set(url('../img/couple_portrait.webp') type('image/webp'), url('../img/couple_portrait.jpg') type('image/jpeg'));
+    background-image: linear-gradient(to bottom, rgba(253,248,242,.3), rgba(253,248,242,.1) 28%, rgba(253,248,242,.1) 72%, rgba(253,248,242,.36)), url('../img/couple_portrait.jpg');
+    background-image: linear-gradient(to bottom, rgba(253,248,242,.3), rgba(253,248,242,.1) 28%, rgba(253,248,242,.1) 72%, rgba(253,248,242,.36)), image-set(url('../img/couple_portrait.webp') type('image/webp'), url('../img/couple_portrait.jpg') type('image/jpeg'));
     background-size: cover, cover; background-position: center, center 38%; background-repeat: no-repeat; }
 
 /* ============================================================
@@ -143,13 +164,12 @@ ul { list-style: none; }
 .venue-photo span { position: absolute; bottom: 0; left: 0; right: 0; padding: 8px; text-align: center; background: linear-gradient(to top, rgba(0,0,0,.5), transparent); color: var(--white); font-size: .8rem; }
 .venue-info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; max-width: 800px; margin: 0 auto; }
 .venue-info-card { text-align: center; padding: 26px 14px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--r-md); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); box-shadow: var(--glass-shadow); transition: transform .3s; }
-.venue-info-card:hover { transform: translateY(-3px); }
 .venue-info-card i { font-size: 1.4rem; color: var(--rose); margin-bottom: 8px; }
 .venue-info-card h4 { font-family: var(--font-cn); color: var(--brown); font-size: .95rem; margin-bottom: 4px; }
 .venue-info-card p { color: var(--text-muted); font-size: .82rem; }
 .venue-map-cta { text-align: center; margin-top: 32px; }
 .btn-map { display: inline-block; padding: 12px 32px; background: var(--glass-bg-strong); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); color: var(--rose); border: 1px solid var(--glass-border); border-radius: 50px; font-size: .85rem; letter-spacing: .06em; box-shadow: var(--glass-shadow); transition: all .3s; }
-.btn-map:hover { background: var(--rose); border-color: var(--rose); color: var(--white); }
+.btn-map:hover { background: linear-gradient(rgba(183,110,121,.8), rgba(183,110,121,.62)) padding-box, var(--glass-edge) border-box; color: var(--white); }
 
 /* ============================================================
    SCHEDULE — vertical timeline
@@ -173,18 +193,44 @@ ul { list-style: none; }
 .rsvp-qr p { font-size: .8rem; color: var(--text-muted); letter-spacing: .08em; }
 
 /* ============================================================
-   CHAMPAGNE HAIRLINE — 主卡片统一香槟金流光发丝边
-   双层 background：padding 层玻璃底色，border 层 135° 金白渐变
+   LIQUID GLASS — 主卡片统一三层玻璃结构
+   ① padding 层：斜向高光带 + 低透明度渐变玻璃体（背景充分透出）
+   ② border 层：conic 香槟金环边流光（1px 发丝边）
+   ③ 阴影层：贴地小影 + 弥散大影 + 内壁受光，模拟玻璃厚度
    ============================================================ */
 .invitation-card, .moment-frame, .rsvp-card, .venue-info-card, .sched-content, .btn-map {
     border: 1px solid transparent;
-    background: linear-gradient(var(--glass-bg-strong), var(--glass-bg-strong)) padding-box, var(--glass-edge) border-box;
+    background:
+        var(--glass-scrim) padding-box,
+        var(--glass-fill) padding-box,
+        var(--glass-edge) border-box;
+}
+/* 卡片文字加一层极轻的白色文字影，保证更高透明度下的可读性 */
+.invitation-card, .rsvp-card, .sched-content, .venue-info-card { text-shadow: 0 1px 8px rgba(255,255,255,.45); }
+.invitation-card :is(i, .cd-days-num), .venue-info-card i { text-shadow: none; }
+/* 悬停时边缘流光更亮、外影更深 —— 玻璃被"拿起"的动态感 */
+.venue-info-card, .btn-map { transition: transform .35s cubic-bezier(.22,.61,.36,1), box-shadow .35s, filter .35s; }
+.venue-info-card:hover, .btn-map:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 1px 2px rgba(61,44,44,.05),
+        0 30px 60px -14px rgba(61,44,44,.28),
+        inset 0 1px 1px rgba(255,255,255,.7),
+        inset 0 -1px 1px rgba(255,255,255,.35),
+        inset 0 0 34px rgba(255,255,255,.12);
+}
+/* 不支持 backdrop-filter 的浏览器：回退到较实的半透明白底，保证可读 */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .invitation-card, .moment-frame, .rsvp-card, .venue-info-card, .sched-content, .btn-map {
+        background: linear-gradient(rgba(255,255,255,.86), rgba(255,255,255,.8)) padding-box, var(--glass-edge) border-box;
+    }
+    .nav.scrolled, .footer { background: rgba(255,255,255,.86); }
 }
 
 /* ============================================================
    FOOTER
    ============================================================ */
-.footer { background: rgba(255,255,255,.45); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-top: 1px solid var(--glass-border); box-shadow: inset 0 1px 0 rgba(255,255,255,.55); padding: 70px 0; text-align: center; position: relative; z-index: 1; }
+.footer { background: linear-gradient(to top, rgba(255,255,255,.4), rgba(255,255,255,.16)); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-top: 1px solid rgba(255,255,255,.55); box-shadow: 0 -1px 1px rgba(61,44,44,.03), 0 -14px 36px -14px rgba(61,44,44,.12), inset 0 1px 1px rgba(255,255,255,.6); padding: 70px 0; text-align: center; position: relative; z-index: 1; }
 .footer-names { font-family: var(--font-cn); font-size: 1.3rem; color: var(--brown); margin-bottom: 10px; }
 .footer-names span { color: var(--rose); margin: 0 6px; }
 .footer-date { font-family: var(--font-en); font-size: 1.1rem; color: var(--rose); letter-spacing: .08em; margin-bottom: 6px; }
@@ -209,7 +255,7 @@ ul { list-style: none; }
     .venue-guide-cartoon { flex: 0 0 auto; max-width: 180px; }
 }
 @media (max-width: 768px) {
-    .nav-links { position: fixed; top: 0; right: -100%; width: 260px; height: 100vh; flex-direction: column; justify-content: center; background: rgba(255,255,255,.72); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-left: 1px solid rgba(255,255,255,.6); padding: 40px; gap: 24px; transition: right .4s; }
+    .nav-links { position: fixed; top: 0; right: -100%; width: 260px; height: 100vh; flex-direction: column; justify-content: center; background: linear-gradient(to right, rgba(255,255,255,.5), rgba(255,255,255,.66)); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-left: 1px solid rgba(255,255,255,.6); box-shadow: -20px 0 50px -20px rgba(61,44,44,.2), inset 1px 0 1px rgba(255,255,255,.5); padding: 40px; gap: 24px; transition: right .4s; }
     .nav-links.active { right: 0; }
     .nav-toggle { display: flex; }
     .hero { padding: calc(var(--nav-h) + 3vh) 20px calc(80px + 2vh); }
