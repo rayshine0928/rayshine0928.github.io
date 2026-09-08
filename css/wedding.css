@@ -1,6 +1,6 @@
 /* ============================================================
-   0928.love — Lawn Wedding Parallax
-   Rainbow silk bg + cartoon lulu & lumei
+   0928.love — Portrait bg + iOS frosted glass
+   固定婚纱照背景 + 玻璃卡片
    ============================================================ */
 
 :root {
@@ -13,10 +13,12 @@
     --font-en: 'Playfair Display', 'Cormorant Garamond', serif;
     --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --nav-h: 70px; --max-w: 1200px;
-    /* frosted glass */
-    --glass-bg: rgba(255,255,255,.42);
-    --glass-border: rgba(255,255,255,.65);
-    --glass-shadow: 0 20px 60px rgba(61,44,44,.08);
+    /* iOS frosted glass — 半透明白 + 强模糊 + 提饱和 + 发丝边 + 顶部内高光 */
+    --glass-bg: rgba(255,255,255,.52);
+    --glass-bg-strong: rgba(255,255,255,.68);
+    --glass-border: rgba(255,255,255,.72);
+    --glass-blur: blur(24px) saturate(180%);
+    --glass-shadow: 0 8px 32px rgba(61,44,44,.12), inset 0 1px 0 rgba(255,255,255,.55);
     --r-lg: 24px; --r-md: 16px;
 }
 
@@ -37,7 +39,7 @@ ul { list-style: none; }
    NAVIGATION
    ============================================================ */
 .nav { position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; padding: 0 24px; transition: .6s; }
-.nav.scrolled { background: rgba(253,248,242,.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 1px 20px rgba(0,0,0,.06); }
+.nav.scrolled { background: rgba(255,255,255,.6); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-bottom: 1px solid rgba(255,255,255,.5); box-shadow: 0 4px 24px rgba(61,44,44,.07); }
 .nav-inner { max-width: var(--max-w); margin: 0 auto; display: flex; justify-content: space-between; align-items: center; height: var(--nav-h); }
 .nav-logo { font-family: var(--font-en); font-size: 1.6rem; font-weight: 700; color: var(--brown); letter-spacing: .06em; transition: .6s; }
 .nav.scrolled .nav-logo { color: var(--rose); }
@@ -50,17 +52,22 @@ ul { list-style: none; }
 .nav-toggle span { display: block; width: 24px; height: 2px; background: var(--brown); transition: .6s; }
 
 /* ============================================================
-   THREE.JS BG
+   FIXED PHOTO BG — 婚纱照铺满全页，不随内容滚动
+   上层叠一条奶油色轻纱，压住高光、托起玻璃卡片
    ============================================================ */
-.three-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
-.three-bg canvas { display: block; }
+.site-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; background-color: var(--cream);
+    background-image: linear-gradient(to bottom, rgba(253,248,242,.34), rgba(253,248,242,.16) 28%, rgba(253,248,242,.16) 72%, rgba(253,248,242,.38)), url('../img/couple_portrait.jpg');
+    background-image: linear-gradient(to bottom, rgba(253,248,242,.34), rgba(253,248,242,.16) 28%, rgba(253,248,242,.16) 72%, rgba(253,248,242,.38)), image-set(url('../img/couple_portrait.webp') type('image/webp'), url('../img/couple_portrait.jpg') type('image/jpeg'));
+    background-size: cover, cover; background-position: center, center 38%; background-repeat: no-repeat; }
 
 /* ============================================================
-   HERO — 3D showcase frame
-   文字退到上下两端作"画框"，中央完全留给 3D 模型，
-   无卡片、无模糊，背景一览无余
+   HERO — 文字退到上下两端作"画框"，中央留给固定背景婚纱照
+   上下各叠一条奶油色渐隐纱，保证文字在任何裁切下都可读
    ============================================================ */
 .hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: calc(var(--nav-h) + 5vh) 24px calc(90px + 3vh); overflow: hidden; }
+.hero::before, .hero::after { content: ''; position: absolute; left: 0; right: 0; z-index: 1; pointer-events: none; }
+.hero::before { top: 0; height: calc(var(--nav-h) + 14vh); background: linear-gradient(to bottom, rgba(253,248,242,.6), rgba(253,248,242,0)); }
+.hero::after { bottom: 0; height: 36vh; background: linear-gradient(to top, rgba(253,248,242,.72), rgba(253,248,242,0)); }
 .hero-top, .hero-bottom { position: relative; z-index: 3; text-align: center; pointer-events: none; }
 .hero-eyebrow { font-family: var(--font-en); font-size: clamp(.95rem, 1.8vw, 1.2rem); font-style: italic; letter-spacing: .18em; color: var(--rose); text-shadow: 0 1px 16px rgba(253,248,242,.9); }
 .hero-eyebrow-cn { font-family: var(--font-cn); font-size: clamp(.78rem, 1.4vw, .95rem); letter-spacing: .5em; text-indent: .5em; color: var(--brown-light); margin-top: 10px; text-shadow: 0 1px 12px rgba(253,248,242,.9); }
@@ -74,32 +81,9 @@ ul { list-style: none; }
 @keyframes scrollPulse { 0%,100% { opacity: .3; transform: scaleY(.8); } 50% { opacity: 1; transform: scaleY(1); } }
 
 /* ============================================================
-   HERO LOADER — 3D 形象加载指示
-   双环反向旋转 + 心跳 + 动态省略号 + 进度条，模型就位即淡出
-   ============================================================ */
-.hero-loader { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 16px; pointer-events: none; transition: opacity .8s ease, transform .8s ease; }
-.hero-loader.done { opacity: 0; transform: translate(-50%, -54%) scale(.92); }
-.hero-loader.stalled .loader-rings, .hero-loader.stalled .loader-bar, .hero-loader.stalled .loader-pct { opacity: 0; transition: opacity .4s; }
-.loader-rings { position: relative; width: 88px; height: 88px; }
-.loader-rings .ring { position: absolute; border-radius: 50%; border: 2px solid transparent; }
-.loader-rings .ring-a { inset: 0; border-top-color: var(--rose); border-right-color: rgba(183,110,121,.3); animation: loaderSpin 1.5s linear infinite; }
-.loader-rings .ring-b { inset: 13px; border-bottom-color: var(--gold); border-left-color: rgba(212,165,116,.3); animation: loaderSpin 2.1s linear infinite reverse; }
-.loader-heart { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--rose); font-size: 1.05rem; animation: heartBeat 1.5s ease-in-out infinite; }
-.loader-text { font-family: var(--font-cn); font-size: .9rem; letter-spacing: .14em; color: var(--brown-light); text-shadow: 0 1px 12px rgba(253,248,242,.9); }
-.loader-dots::after { content: ''; display: inline-block; width: 1.2em; text-align: left; animation: loaderDots 1.8s infinite; }
-.loader-bar { width: 160px; height: 3px; border-radius: 3px; background: rgba(183,110,121,.14); overflow: hidden; opacity: 0; transition: opacity .5s; }
-.loader-bar span { display: block; height: 100%; width: 0; border-radius: 3px; background: linear-gradient(to right, var(--rose), var(--gold)); transition: width .35s ease; }
-.loader-pct { font-family: var(--font-en); font-size: .82rem; letter-spacing: .12em; color: var(--rose); opacity: 0; transition: opacity .5s; margin-top: -6px; }
-.hero-loader.loading-model .loader-bar, .hero-loader.loading-model .loader-pct { opacity: 1; }
-@keyframes loaderSpin { to { transform: rotate(360deg); } }
-@keyframes heartBeat { 0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: .7; } 50% { transform: translate(-50%, -50%) scale(1.22); opacity: 1; } }
-@keyframes loaderDots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } }
-@media (prefers-reduced-motion: reduce) { .loader-rings .ring-a, .loader-rings .ring-b, .loader-heart, .loader-dots::after { animation: none; } }
-
-/* ============================================================
    SECTION SPACING
    ============================================================ */
-.invitation, .story, .gallery, .venue, .schedule, .rsvp { padding: 100px 0; position: relative; z-index: 1; }
+.invitation, .story, .moment, .gallery, .venue, .schedule, .rsvp { padding: 100px 0; position: relative; z-index: 1; }
 
 /* ============================================================
    INVITATION
@@ -107,7 +91,7 @@ ul { list-style: none; }
 .invitation-layout { display: flex; align-items: center; gap: 40px; max-width: 1000px; margin: 0 auto; }
 .invitation-cartoon { flex: 0 0 300px; will-change: transform; }
 .invitation-cartoon img { width: 100%; filter: drop-shadow(0 8px 24px rgba(0,0,0,.1)); }
-.invitation-card { flex: 1; background: var(--glass-bg); backdrop-filter: blur(22px) saturate(1.4); -webkit-backdrop-filter: blur(22px) saturate(1.4); border: 1px solid var(--glass-border); border-radius: var(--r-lg); padding: 50px 40px; text-align: center; box-shadow: var(--glass-shadow); }
+.invitation-card { flex: 1; background: var(--glass-bg-strong); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: var(--r-lg); padding: 50px 40px; text-align: center; box-shadow: var(--glass-shadow); }
 .invitation-pretext { font-family: var(--font-en); font-size: .9rem; font-style: italic; color: var(--text-muted); letter-spacing: .06em; margin-bottom: 16px; }
 .invitation-names { font-family: var(--font-cn); font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 700; color: var(--brown); margin-bottom: 16px; }
 .invitation-names span { font-family: var(--font-en); font-style: italic; color: var(--rose); font-weight: 400; }
@@ -127,7 +111,7 @@ ul { list-style: none; }
    OUR STORY — 4-panel comic
    ============================================================ */
 .story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; max-width: 1000px; margin: 0 auto; }
-.story-panel { position: relative; border-radius: 20px; overflow: hidden; box-shadow: var(--glass-shadow); transition: transform .3s; background: var(--white); border: 1px solid var(--glass-border); }
+.story-panel { position: relative; border-radius: 20px; overflow: hidden; box-shadow: var(--glass-shadow); transition: transform .3s; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); }
 .story-panel:hover { transform: translateY(-5px); box-shadow: 0 16px 48px rgba(61,44,44,.12); }
 .story-img { width: 100%; aspect-ratio: 4/3; overflow: hidden; }
 .story-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
@@ -139,6 +123,18 @@ ul { list-style: none; }
 .story-caption p { font-size: .88rem; color: var(--text-muted); }
 
 /* ============================================================
+   MOMENT — 园林婚纱照，iOS 玻璃相框
+   外层玻璃作卡纸边框，内层照片圆角内嵌，悬停轻微推近
+   ============================================================ */
+.moment-frame { max-width: 520px; margin: 0 auto; padding: 14px; background: var(--glass-bg-strong); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 32px; box-shadow: var(--glass-shadow); will-change: transform; }
+.moment-photo { border-radius: 22px; overflow: hidden; }
+.moment-photo img { width: 100%; aspect-ratio: 3/4; object-fit: cover; transition: transform .9s cubic-bezier(.22,.61,.36,1); }
+.moment-frame:hover .moment-photo img { transform: scale(1.035); }
+.moment-caption { padding: 18px 12px 10px; text-align: center; }
+.moment-cn { font-family: var(--font-cn); font-size: 1rem; color: var(--brown); letter-spacing: .12em; }
+.moment-en { font-family: var(--font-en); font-style: italic; font-size: .85rem; color: var(--text-muted); margin-top: 4px; }
+
+/* ============================================================
    GALLERY — removed (no real photos)
    ============================================================ */
 
@@ -146,24 +142,24 @@ ul { list-style: none; }
    VENUE
    ============================================================ */
 .venue-main { display: flex; align-items: center; gap: 40px; max-width: 900px; margin: 0 auto 50px; }
-.venue-logo-card { flex: 1; text-align: center; }
+.venue-logo-card { flex: 1; text-align: center; padding: 36px 28px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: var(--r-lg); box-shadow: var(--glass-shadow); }
 .venue-logo-card img { width: 100px; margin: 0 auto 16px; border-radius: 50%; box-shadow: 0 4px 16px rgba(0,0,0,.08); }
 .venue-logo-card h3 { font-family: var(--font-cn); font-size: 1.5rem; color: var(--brown); margin-bottom: 8px; }
 .venue-logo-card p { color: var(--text-muted); font-size: .9rem; }
 .venue-guide-cartoon { flex: 0 0 240px; will-change: transform; }
 .venue-guide-cartoon img { width: 100%; filter: drop-shadow(0 6px 18px rgba(0,0,0,.12)); }
 .venue-photos { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 700px; margin: 0 auto 40px; }
-.venue-photo { position: relative; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+.venue-photo { position: relative; border-radius: var(--r-md); overflow: hidden; border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); }
 .venue-photo img { width: 100%; height: 200px; object-fit: cover; }
 .venue-photo span { position: absolute; bottom: 0; left: 0; right: 0; padding: 8px; text-align: center; background: linear-gradient(to top, rgba(0,0,0,.5), transparent); color: var(--white); font-size: .8rem; }
 .venue-info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; max-width: 800px; margin: 0 auto; }
-.venue-info-card { text-align: center; padding: 26px 14px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--r-md); backdrop-filter: blur(18px) saturate(1.3); -webkit-backdrop-filter: blur(18px) saturate(1.3); box-shadow: 0 8px 30px rgba(61,44,44,.05); transition: transform .3s; }
+.venue-info-card { text-align: center; padding: 26px 14px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--r-md); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); box-shadow: var(--glass-shadow); transition: transform .3s; }
 .venue-info-card:hover { transform: translateY(-3px); }
 .venue-info-card i { font-size: 1.4rem; color: var(--rose); margin-bottom: 8px; }
 .venue-info-card h4 { font-family: var(--font-cn); color: var(--brown); font-size: .95rem; margin-bottom: 4px; }
 .venue-info-card p { color: var(--text-muted); font-size: .82rem; }
 .venue-map-cta { text-align: center; margin-top: 32px; }
-.btn-map { display: inline-block; padding: 12px 32px; background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); color: var(--rose); border: 1px solid var(--glass-border); border-radius: 50px; font-size: .85rem; letter-spacing: .06em; box-shadow: var(--glass-shadow); transition: all .3s; }
+.btn-map { display: inline-block; padding: 12px 32px; background: var(--glass-bg-strong); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); color: var(--rose); border: 1px solid var(--glass-border); border-radius: 50px; font-size: .85rem; letter-spacing: .06em; box-shadow: var(--glass-shadow); transition: all .3s; }
 .btn-map:hover { background: var(--rose); border-color: var(--rose); color: var(--white); }
 
 /* ============================================================
@@ -174,15 +170,15 @@ ul { list-style: none; }
 .sched-item { display: flex; align-items: flex-start; gap: 20px; margin-bottom: 32px; position: relative; }
 .sched-item:last-child { margin-bottom: 0; }
 .sched-time { flex: 0 0 75px; font-family: var(--font-en); font-size: 1.2rem; font-weight: 700; color: var(--rose); text-align: right; padding-top: 2px; }
-.sched-dot { flex: 0 0 12px; width: 12px; height: 12px; margin-top: 8px; background: var(--rose); border: 2px solid var(--cream); border-radius: 50%; box-shadow: 0 0 0 3px var(--rose); z-index: 1; position: relative; left: -6px; }
-.sched-content { flex: 1; background: var(--glass-bg); backdrop-filter: blur(18px) saturate(1.3); -webkit-backdrop-filter: blur(18px) saturate(1.3); border: 1px solid var(--glass-border); border-radius: var(--r-md); padding: 18px 22px; box-shadow: 0 8px 30px rgba(61,44,44,.05); }
+.sched-dot { flex: 0 0 12px; width: 12px; height: 12px; margin-top: 8px; background: var(--rose); border: 2px solid rgba(255,255,255,.85); border-radius: 50%; box-shadow: 0 0 0 3px var(--rose); z-index: 1; position: relative; left: -6px; }
+.sched-content { flex: 1; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: var(--r-md); padding: 18px 22px; box-shadow: var(--glass-shadow); }
 .sched-content h4 { font-family: var(--font-cn); font-size: 1rem; color: var(--brown); margin-bottom: 2px; }
 .sched-content p { font-size: .85rem; color: var(--text-muted); }
 
 /* ============================================================
    RSVP
    ============================================================ */
-.rsvp-card { max-width: 440px; margin: 0 auto; background: var(--glass-bg); backdrop-filter: blur(22px) saturate(1.4); -webkit-backdrop-filter: blur(22px) saturate(1.4); border: 1px solid var(--glass-border); border-radius: var(--r-lg); padding: 44px 36px; text-align: center; box-shadow: var(--glass-shadow); }
+.rsvp-card { max-width: 440px; margin: 0 auto; background: var(--glass-bg-strong); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: var(--r-lg); padding: 44px 36px; text-align: center; box-shadow: var(--glass-shadow); }
 .rsvp-intro { font-family: var(--font-cn); font-size: .95rem; color: var(--text); margin-bottom: 28px; letter-spacing: .06em; }
 .qr-img { width: 220px; margin: 0 auto 16px; padding: 12px; background: rgba(255,255,255,.92); border: 1px solid var(--glass-border); border-radius: 18px; box-shadow: 0 8px 30px rgba(61,44,44,.08); }
 .rsvp-qr p { font-size: .8rem; color: var(--text-muted); letter-spacing: .08em; }
@@ -190,7 +186,7 @@ ul { list-style: none; }
 /* ============================================================
    FOOTER
    ============================================================ */
-.footer { background: rgba(255,255,255,.35); backdrop-filter: blur(18px) saturate(1.3); -webkit-backdrop-filter: blur(18px) saturate(1.3); border-top: 1px solid var(--glass-border); padding: 70px 0; text-align: center; position: relative; z-index: 1; }
+.footer { background: rgba(255,255,255,.45); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-top: 1px solid var(--glass-border); box-shadow: inset 0 1px 0 rgba(255,255,255,.55); padding: 70px 0; text-align: center; position: relative; z-index: 1; }
 .footer-names { font-family: var(--font-cn); font-size: 1.3rem; color: var(--brown); margin-bottom: 10px; }
 .footer-names span { color: var(--rose); margin: 0 6px; }
 .footer-date { font-family: var(--font-en); font-size: 1.1rem; color: var(--rose); letter-spacing: .08em; margin-bottom: 6px; }
@@ -216,7 +212,7 @@ ul { list-style: none; }
     .venue-guide-cartoon { flex: 0 0 auto; max-width: 180px; }
 }
 @media (max-width: 768px) {
-    .nav-links { position: fixed; top: 0; right: -100%; width: 260px; height: 100vh; flex-direction: column; justify-content: center; background: rgba(253,248,242,.98); backdrop-filter: blur(20px); padding: 40px; gap: 24px; transition: right .4s; }
+    .nav-links { position: fixed; top: 0; right: -100%; width: 260px; height: 100vh; flex-direction: column; justify-content: center; background: rgba(255,255,255,.72); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-left: 1px solid rgba(255,255,255,.6); padding: 40px; gap: 24px; transition: right .4s; }
     .nav-links.active { right: 0; }
     .nav-toggle { display: flex; }
     .hero { padding: calc(var(--nav-h) + 3vh) 20px calc(80px + 2vh); }
@@ -231,4 +227,6 @@ ul { list-style: none; }
     .hero-place { letter-spacing: .22em; text-indent: .22em; }
     .gallery-polaroid-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
     .qr-img { width: 190px; }
+    .moment-frame { padding: 10px; border-radius: 26px; }
+    .moment-photo { border-radius: 18px; }
 }

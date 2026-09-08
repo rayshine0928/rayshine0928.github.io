@@ -2,7 +2,7 @@
 layout: wedding
 ---
 
-<!-- ==================== HERO — 3D 橱窗：文字作框，中央留给模型 ==================== -->
+<!-- ==================== HERO — 文字作框，中央留给固定背景婚纱照 ==================== -->
 <section class="hero" id="hero">
     <div class="hero-top reveal">
         <p class="hero-eyebrow">We're Getting Married</p>
@@ -11,17 +11,6 @@ layout: wedding
     <div class="hero-bottom reveal">
         <p class="hero-date">2026 · 09 · 28</p>
         <p class="hero-place">杭州 · 西湖 · 六通宾馆</p>
-    </div>
-    <!-- 3D 形象加载指示器：模型就位后自动淡出 -->
-    <div class="hero-loader" id="modelLoader" role="status" aria-live="polite">
-        <div class="loader-rings">
-            <span class="ring ring-a"></span>
-            <span class="ring ring-b"></span>
-            <i class="fas fa-heart loader-heart"></i>
-        </div>
-        <p class="loader-text"><span id="loaderText">正在唤醒 3D 场景</span><span class="loader-dots"></span></p>
-        <div class="loader-bar"><span id="loaderBar"></span></div>
-        <p class="loader-pct"><span id="loaderPct">0</span>%</p>
     </div>
     <div class="scroll-hint">
         <span>向下探索我们的故事</span>
@@ -78,6 +67,23 @@ layout: wedding
                 <div class="story-caption"><span class="story-num">04</span><h3>婚礼 <em>The Wedding</em></h3></div>
             </div>
         </div>
+    </div>
+</section>
+
+<!-- ==================== MOMENT — 园林婚纱照，玻璃相框 ==================== -->
+<section class="moment" id="moment">
+    <div class="container">
+        <h2 class="section-title reveal">园林 · 瞬间</h2>
+        <p class="section-subtitle reveal">A Moment in the Garden</p>
+        <figure class="moment-frame reveal" data-parallax="0.9">
+            <div class="moment-photo">
+                <img src="{{ '/img/garden_moment.webp' | relative_url }}" alt="园林窗前的婚纱照" loading="lazy" decoding="async" width="1200" height="1600">
+            </div>
+            <figcaption class="moment-caption">
+                <p class="moment-cn">园林深处，绿意正浓；执子之手，恰是此刻。</p>
+                <p class="moment-en">Where the garden keeps our quiet vow</p>
+            </figcaption>
+        </figure>
     </div>
 </section>
 

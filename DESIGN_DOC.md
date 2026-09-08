@@ -1,147 +1,42 @@
-# 0928.love 婚礼网站 — 创意视差滚动设计文档
+# 0928.love 婚礼网站 — 设计文档（v19 · 2026-09-08）
 
-## 一、设计理念
+## 一、当前视觉方向
 
-### 核心概念：「噜噜与噜妹的爱情旅程」
+### 核心概念：真实婚纱照作底，玻璃卡片叙事
+- **固定背景**：`img/couple_portrait.webp`（卡其色端庄婚纱照）由 `.site-bg` fixed 层铺满全页、**不随内容滚动**；上层叠一条奶油色轻纱渐变（`linear-gradient` 同层 background-image），压高光、托卡片。
+- **iOS 玻璃**：所有卡片/导航/页脚统一配方 —— 半透明白 + `backdrop-filter: blur(24px) saturate(180%)` + 发丝白边 + 顶部内高光。集中定义在 `css/wedding.css` 的 `--glass-bg / --glass-bg-strong / --glass-border / --glass-blur / --glass-shadow`，改配方只改变量。
+- **文字作框**：hero 文字退到上下两端（eyebrow / 日期），中央完全留给背景照片；上下各一条奶油色渐隐纱保证可读。
+- **卡通保留 2D**：噜噜噜妹卡通插画仅用于请柬侧图 / 故事四格 / 场地指路；**3D 模型已于 v19 退役**（36MB glb + three.js CDN 加载过慢）。
 
-以**故事绘本**为叙事结构，将整页设计成一幅纵向展开的画卷。用户每一次向下滚动，都会进入一个新的"章节"，章节之间通过**视差滚动层 + 噜噜噜妹卡通形象**无缝衔接。
+### 页面结构（纵向 8 节）
+1. HERO — 固定背景 + 上下文字框 + 下滑提示
+2. INVITATION — 玻璃请柬卡（含倒计时天数胶囊）+ 卡通请柬图
+3. OUR STORY — 四格卡通连环画，玻璃卡
+4. MOMENT — 园林婚纱照，iOS 玻璃相框（v19 新增，`#moment`）
+5. VENUE — 玻璃 logo 卡 + 卡通指路 + 实景照 + 信息卡 + 地图按钮
+6. SCHEDULE — 竖时间线 + 玻璃流程卡（仪式 / 晚宴）
+7. RSVP — 玻璃卡 + 出席登记二维码
+8. FOOTER — 全宽玻璃页脚
 
-### 视觉语言
-- **主色调**：草坪绿 (#7A9A6E) + 彩虹点缀 (多色) + 奶油白 (#FFF8F0) + 玫瑰金 (#B76E79)
-- **风格定位**：户外草坪婚礼 × 插画叙事 × 高端婚礼杂志
-- **核心元素**：真实婚礼照片 + AI 生成的噜噜噜妹卡通插画
+## 二、资产与性能
 
----
+| 资产 | 源 | 线上 | 说明 |
+|------|----|------|------|
+| `couple_portrait.webp/.jpg` | 6192×8256 · 24MB | 1500×2000 · webp 88KB / jpg 384KB | 固定背景；`<link rel=preload fetchpriority=high>`；CSS `image-set()` 优先 webp |
+| `garden_moment.webp/.jpg` | 6192×8256 · 30MB | 1200×1600 · webp 92KB / jpg 365KB | MOMENT 相框；`loading=lazy` + 宽高属性防 CLS |
+| 卡通 PNG ×7 | — | 各 ~240KB–1.3MB | 2D 插画，生成管线见 `data/engagement_gen/` |
 
-## 二、页面结构（7 章，纵向滚动）
+- **压缩流程**：`sips -Z <长边>` 缩放 → `cwebp -m 6 -q 72~74` 出 webp → `sips -s format jpeg -s formatOptions 70~72` 出 jpg 兜底。
+- **JS**：仅 `js/wedding.js`（倒计时 / 视差 / reveal / 导航）；无 three.js、无框架。字体与 Font Awesome 走 CDN。
+- 请柬卡片生成（国学风成片、二维码像素级贴码）约定见 `data/engagement_gen/` 脚本与记忆库。
 
-### Chapter 1: HERO — 草坪婚礼全景
-- **背景**：高清「草坪婚礼_彩虹装饰实景」全屏铺满
-- **前景**：噜噜和噜妹的卡通形象（AI 生成）站在画面中央偏下，手牵手
-- **视差**：背景 0.3x，卡通人物 0.6x，标题文字 1.0x
-- **文字**：「李笑然 & 严瑞」「2026.09.28」「杭州 · 六通宾馆」
-- **向下滚动**：卡通噜噜噜妹挥手引导向下
+## 三、交互
+- 滚动 reveal：IntersectionObserver 加 `.visible`。
+- 视差：`[data-parallax]` 元素按速率 translate3d（RAF 节流）。
+- 导航：滚动 60px 后变玻璃态；移动端抽屉同样玻璃。
+- `prefers-reduced-motion` 下停用装饰动画。
 
-### Chapter 2: INVITATION — 草坪婚礼请柬
-- **过渡**：Chapter 1 的草坪背景向上淡出，彩虹色粒子飘散
-- **中景层**：噜噜和噜妹卡通形象在右侧/左侧，手持请柬
-- **内容**：正式请柬文字，日期时间地点
-- **视差**：请柬卡片 1.0x，卡通人物 0.7x，彩虹粒子 0.4x
-
-### Chapter 3: OUR STORY — 我们的故事
-- **概念**：时间轴设计，但用**噜噜噜妹卡通连环画**代替传统 timeline
-- **AI 生成需求**：4 幅卡通连环画风格插图
-  - ① 初见：两人在人群中初次对视（手绘水彩风）
-  - ② 相爱：两人一起旅行/散步（温暖插画风）
-  - ③ 求婚：单膝跪地（浪漫漫画风）
-  - ④ 婚礼：两人站在草坪婚礼现场（与 Hero 呼应）
-- **视差**：每幅插图以不同速率移动，滚动时产生前后层次
-
-### Chapter 4: GALLERY — 甜蜜瞬间
-- **概念**：真实照片 + 卡通边框/装饰
-- **内容**：噜噜噜妹的 6 张真实照片，以 Polaroid 拍立得风格排列
-- **卡通元素**：AI 生成的噜噜噜妹小头像作为装饰角标
-- **视差**：照片以瀑布流排列，不同列不同速率
-
-### Chapter 5: VENUE — 婚礼场地
-- **背景**：六通宾馆西湖鸟瞰图（已有）+ 草坪婚礼设计图
-- **中景层**：卡通噜噜噜妹在场地地图上"指路"
-- **内容**：场地信息卡片
-- **视差**：背景 0.3x，卡片 1.0x
-
-### Chapter 6: SCHEDULE — 婚礼流程
-- **概念**：横向时间线 + 每步配卡通噜噜噜妹小插图
-- **AI 生成需求**：7 张流程小图标（卡通噜噜噜妹做各种动作）
-  - 迎亲、敬茶、外景、仪式、晚宴、Party、送客
-- **视差**：时间线横向排列，滚动时卡片依次弹出
-
-### Chapter 7: RSVP + FOOTER
-- **背景**：草坪婚礼的傍晚色调（暖金 + 粉紫）
-- **卡通噜噜噜妹**在画面底部挥手再见
-- 联系方式 + 微信二维码
-
----
-
-## 三、AI 图片生成清单
-
-### 🔴 必须生成（8 张）
-
-| # | 文件名 | 用途 | 类型 | 尺寸 | 优先级 |
-|---|--------|------|------|------|--------|
-| 1 | `hero_lawn_4k.jpg` | Hero 全屏背景 — 草坪婚礼彩虹实景超清版 | 实景增强 | 2560×1440 | 🔴 |
-| 2 | `cartoon_couple_hero.png` | Hero 前景 — 噜噜噜妹卡通全身牵手，透明背景 | 卡通插图 | 1024×1024 | 🔴 |
-| 3 | `cartoon_story_01_first_met.png` | 故事① — 初见 | 卡通连环画 | 800×600 | 🔴 |
-| 4 | `cartoon_story_02_love.png` | 故事② — 相爱 | 卡通连环画 | 800×600 | 🔴 |
-| 5 | `cartoon_story_03_proposal.png` | 故事③ — 求婚 | 卡通连环画 | 800×600 | 🔴 |
-| 6 | `cartoon_story_04_wedding.png` | 故事④ — 婚礼 | 卡通连环画 | 800×600 | 🔴 |
-| 7 | `cartoon_couple_invitation.png` | 请柬区 — 噜噜噜妹手持请柬 | 卡通插图 | 600×800 | 🔴 |
-| 8 | `cartoon_couple_guide.png` | 场地区 — 噜噜噜妹指路 | 卡通插图 | 600×600 | 🔴 |
-
-### 🟡 锦上添花
-
-| # | 文件名 | 用途 |
-|---|--------|------|
-| 9-15 | `cartoon_schedule_*.png` | 流程区 7 张小图标 |
-| 16 | `cartoon_couple_goodbye.png` | Footer 挥手告别 |
-
----
-
-## 四、图片编辑代码改造方案
-
-### 现有代码分析
-```
-data/engagement_gen/
-├── edit_image.py              ← 核心：调用 AI API 编辑图片
-├── generate_engagement_photos.py ← 批量生成订婚照（证件照+例图）
-├── replace_engagement_background.py ← 替换背景合成
-├── batch_golden_hour_variants.py ← 批量变体
-├── api.env                    ← API 密钥（不动）
-├── prompt.txt / prompt_2.txt  ← 提示词参考
-├── templates/                 ← 参考图（证件照、背景等）
-└── outputs/                   ← 输出目录
-```
-
-### 改造内容
-1. **保留**：`edit_image.py`（核心 API 调用）— 不动
-2. **新增脚本 1**：`generate_cartoon.py` — 生成卡通风格噜噜噜妹
-   - 输入：真实照片（如 `噜噜和噜妹的结婚登记照.jpg`）
-   - 输出：卡通风格插图（PNG 透明背景）
-   - Prompt：要求将真人转为特定卡通风格
-3. **新增脚本 2**：`upscale_lawn.py` — 超高清化草坪婚礼照片
-   - 输入：`草坪婚礼_彩虹装饰实景.jpg`
-   - 输出：4K 超清版本
-   - Prompt：增强分辨率 + 色彩 + 细节
-4. **删除**：`prompt_2.txt`（小米手机广告 — 无关）
-5. **删除**：`batch_golden_hour_variants.py` 和 `generate_engagement_photos.py`（不再需要订婚照）
-6. **保留**：`replace_engagement_background.py`（可能用于背景合成）
-
----
-
-## 五、视差滚动技术方案
-
-### 层次结构
-```
-Layer 5 (z-index: 5) — 文字/标题         scroll speed: 1.0x
-Layer 4 (z-index: 4) — UI 卡片/表单      scroll speed: 1.0x
-Layer 3 (z-index: 3) — 卡通角色/装饰     scroll speed: 0.7x
-Layer 2 (z-index: 2) — 中景插图/照片     scroll speed: 0.5x
-Layer 1 (z-index: 1) — 背景图/渐变       scroll speed: 0.3x
-Layer 0 (z-index: 0) — 全局底色
-```
-
-### 技术实现
-- CSS `translate3d` + JavaScript scroll listener（RAF throttled）
-- Three.js 场景**仅用于粒子/彩虹碎屑装饰效果**
-- 卡通元素用 CSS sprite 或绝对定位 PNG
-- 滚动触发 reveal 动画用 Intersection Observer
-
----
-
-## 六、下一步行动
-
-1. ✅ 设计文档完成 → 用户确认
-2. 🔲 改造图片编辑脚本
-3. 🔲 生成 8 张核心图片
-4. 🔲 重构 HTML/CSS（基于新素材）
-5. 🔲 重构 Three.js 场景（彩虹粒子 + 装饰）
-6. 🔲 测试 + 部署
+## 四、版本沿革
+- v16 玻璃简化（单倒计时、QR 回执）→ v17 hero 画框化 → v18 3D 加载指示器 + 移动端居中修复
+- **v19（当前）**：退役 3D（删 `wedding-three.js`、两个 glb、hippo_wedding.glb，共 ~92MB）；真实婚纱照固定背景 + 全站 iOS 玻璃；新增 MOMENT 园林照 section；两张婚纱照压缩为 webp/jpg 双格式。
+- 更早的「七章视差画卷」方案与 AI 图片清单已过期，见 git 历史中的旧版 DESIGN_DOC。

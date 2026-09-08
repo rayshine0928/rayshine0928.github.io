@@ -12,25 +12,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="preload" as="image" href="{{ '/img/couple_portrait.webp' | relative_url }}" fetchpriority="high">
     <link rel="stylesheet" href="{{ '/css/wedding.css' | relative_url }}">
-    <script type="importmap">
-    {
-        "imports": {
-            "three": "https://esm.sh/three@0.150.1",
-            "three/addons/": "https://esm.sh/three@0.150.1/examples/jsm/"
-        }
-    }
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js" defer></script>
-    <script type="module">
-        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-        window.THREE = window.THREE || {};
-        window.THREE.GLTFLoader = GLTFLoader;
-    </script>
 </head>
 <body>
-    <!-- Shared Three.js background — spans entire page -->
-    <div id="threeBg" class="three-bg"></div>
+    <!-- 固定婚纱照背景 — 铺满全页、不随内容滚动 -->
+    <div class="site-bg" aria-hidden="true"></div>
 
     <!-- Navigation -->
     <nav class="nav" id="nav">
@@ -39,8 +26,9 @@
             <ul class="nav-links">
                 <li><a href="#invitation">请柬</a></li>
                 <li><a href="#story">故事</a></li>
-                <li><a href="#schedule">流程</a></li>
+                <li><a href="#moment">瞬间</a></li>
                 <li><a href="#venue">场地</a></li>
+                <li><a href="#schedule">流程</a></li>
                 <li><a href="#rsvp">回执</a></li>
             </ul>
             <button class="nav-toggle" id="navToggle" aria-label="菜单">
@@ -52,6 +40,5 @@
     {{ content }}
 
     <script src="{{ '/js/wedding.js' | relative_url }}"></script>
-    <script src="{{ '/js/wedding-three.js' | relative_url }}"></script>
 </body>
 </html>
