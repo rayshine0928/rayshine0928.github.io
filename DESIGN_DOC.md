@@ -4,19 +4,20 @@
 
 ### 核心概念：真实婚纱照作底，玻璃卡片叙事
 - **固定背景**：`img/couple_portrait.webp`（卡其色端庄婚纱照）由 `.site-bg` fixed 层铺满全页、**不随内容滚动**；上层叠一条奶油色轻纱渐变（`linear-gradient` 同层 background-image），压高光、托卡片。
-- **iOS 玻璃**：所有卡片/导航/页脚统一配方 —— 半透明白 + `backdrop-filter: blur(24px) saturate(180%)` + 发丝白边 + 顶部内高光。集中定义在 `css/wedding.css` 的 `--glass-bg / --glass-bg-strong / --glass-border / --glass-blur / --glass-shadow`，改配方只改变量。
+- **iOS 玻璃 + 香槟金发丝边**：所有卡片/导航/页脚统一配方 —— 半透明白 + `backdrop-filter: blur(32px) saturate(190%)` + 135° 金白渐变发丝边（双层 background：padding 层玻璃底色、border 层 `--glass-edge`）+ 上下内高光 + 深投影。集中定义在 `css/wedding.css` 的 `--glass-*` 变量，改配方只改变量；发丝边统一加在 `.invitation-card / .moment-frame / .rsvp-card / .venue-info-card / .sched-content / .btn-map`。
 - **文字作框**：hero 文字退到上下两端（eyebrow / 日期），中央完全留给背景照片；上下各一条奶油色渐隐纱保证可读。
-- **卡通保留 2D**：噜噜噜妹卡通插画仅用于请柬侧图 / 故事四格 / 场地指路；**3D 模型已于 v19 退役**（36MB glb + three.js CDN 加载过慢）。
+- **卡通保留 2D**：噜噜噜妹卡通插画仅用于请柬侧图 / 场地指路；**3D 模型已于 v19 退役**（36MB glb + three.js CDN 加载过慢）。
 
-### 页面结构（纵向 8 节）
+### 页面结构（纵向 7 节）
 1. HERO — 固定背景 + 上下文字框 + 下滑提示
 2. INVITATION — 玻璃请柬卡（含倒计时天数胶囊）+ 卡通请柬图
-3. OUR STORY — 四格卡通连环画，玻璃卡
-4. MOMENT — 园林婚纱照，iOS 玻璃相框（v19 新增，`#moment`）
-5. VENUE — 玻璃 logo 卡 + 卡通指路 + 实景照 + 信息卡 + 地图按钮
-6. SCHEDULE — 竖时间线 + 玻璃流程卡（仪式 / 晚宴）
-7. RSVP — 玻璃卡 + 出席登记二维码
-8. FOOTER — 全宽玻璃页脚
+3. MOMENT — 园林婚纱照，玻璃相框（v19 新增，`#moment`）
+4. VENUE — 酒店名直排于背景（不衬卡片、无 logo，v20）+ 卡通指路 + 实景照 + 信息卡 + 地图按钮
+5. SCHEDULE — 竖时间线 + 玻璃流程卡（仪式 / 晚宴）
+6. RSVP — 玻璃卡 + 出席登记二维码
+7. FOOTER — 全宽玻璃页脚
+
+（「我们的故事」四格卡通连环画于 v20 移除；卡通仅保留请柬侧图与场地指路两处。）
 
 ## 二、资产与性能
 
@@ -38,5 +39,6 @@
 
 ## 四、版本沿革
 - v16 玻璃简化（单倒计时、QR 回执）→ v17 hero 画框化 → v18 3D 加载指示器 + 移动端居中修复
-- **v19（当前）**：退役 3D（删 `wedding-three.js`、两个 glb、hippo_wedding.glb，共 ~92MB）；真实婚纱照固定背景 + 全站 iOS 玻璃；新增 MOMENT 园林照 section；两张婚纱照压缩为 webp/jpg 双格式。
+- v19：退役 3D（删 `wedding-three.js`、两个 glb、hippo_wedding.glb，共 ~92MB）；真实婚纱照固定背景 + 全站 iOS 玻璃；新增 MOMENT 园林照 section；两张婚纱照压缩为 webp/jpg 双格式。
+- **v20（当前）**：移除「我们的故事」四格卡通；场地酒店名去卡片化直排；玻璃升级为香槟金发丝边 + 深 blur + 金线题饰（section-title 下金线、subtitle 金色斜体），向百万级婚礼质感靠拢。
 - 更早的「七章视差画卷」方案与 AI 图片清单已过期，见 git 历史中的旧版 DESIGN_DOC。

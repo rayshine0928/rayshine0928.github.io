@@ -13,13 +13,16 @@
     --font-en: 'Playfair Display', 'Cormorant Garamond', serif;
     --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --nav-h: 70px; --max-w: 1200px;
-    /* iOS frosted glass — 半透明白 + 强模糊 + 提饱和 + 发丝边 + 顶部内高光 */
-    --glass-bg: rgba(255,255,255,.52);
-    --glass-bg-strong: rgba(255,255,255,.68);
-    --glass-border: rgba(255,255,255,.72);
-    --glass-blur: blur(24px) saturate(180%);
-    --glass-shadow: 0 8px 32px rgba(61,44,44,.12), inset 0 1px 0 rgba(255,255,255,.55);
-    --r-lg: 24px; --r-md: 16px;
+    /* iOS frosted glass — 半透明白 + 深模糊 + 提饱和 + 香槟金发丝边 + 上下内高光 */
+    --glass-bg: rgba(255,255,255,.44);
+    --glass-bg-strong: rgba(255,255,255,.6);
+    --glass-border: rgba(255,255,255,.6);
+    --glass-blur: blur(32px) saturate(190%);
+    --glass-shadow: 0 24px 70px rgba(61,44,44,.16), inset 0 1px 0 rgba(255,255,255,.7), inset 0 -1px 0 rgba(255,255,255,.22);
+    /* 香槟金流光发丝边：border 层渐变，padding 层玻璃底色 */
+    --glass-edge: linear-gradient(135deg, rgba(255,255,255,.95), rgba(212,165,116,.6) 42%, rgba(255,255,255,.28));
+    --gold-deep: #AE8352;
+    --r-lg: 28px; --r-md: 18px;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -32,8 +35,9 @@ ul { list-style: none; }
 .container { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; position: relative; z-index: 2; }
 
 /* Typography */
-.section-title { font-family: var(--font-cn); font-size: clamp(1.8rem, 3.5vw, 2.5rem); font-weight: 600; color: var(--brown); text-align: center; margin-bottom: 6px; letter-spacing: 0.1em; }
-.section-subtitle { font-family: var(--font-en); font-size: .95rem; font-style: italic; color: var(--rose); text-align: center; margin-bottom: 56px; letter-spacing: 0.08em; }
+.section-title { font-family: var(--font-cn); font-size: clamp(1.8rem, 3.5vw, 2.5rem); font-weight: 600; color: var(--brown); text-align: center; margin-bottom: 6px; letter-spacing: 0.16em; }
+.section-title::after { content: ''; display: block; width: 64px; height: 1px; margin: 16px auto 0; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+.section-subtitle { font-family: var(--font-en); font-size: .95rem; font-style: italic; color: var(--gold-deep); text-align: center; margin: 14px 0 56px; letter-spacing: 0.14em; }
 
 /* ============================================================
    NAVIGATION
@@ -83,7 +87,7 @@ ul { list-style: none; }
 /* ============================================================
    SECTION SPACING
    ============================================================ */
-.invitation, .story, .moment, .gallery, .venue, .schedule, .rsvp { padding: 100px 0; position: relative; z-index: 1; }
+.invitation, .moment, .gallery, .venue, .schedule, .rsvp { padding: 100px 0; position: relative; z-index: 1; }
 
 /* ============================================================
    INVITATION
@@ -108,25 +112,10 @@ ul { list-style: none; }
 .invitation-countdown .cd-days-num { display: inline-block; font-family: var(--font-en); font-size: 1.25rem; font-weight: 700; color: var(--brown); line-height: 1; margin: 0 2px; }
 
 /* ============================================================
-   OUR STORY — 4-panel comic
-   ============================================================ */
-.story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; max-width: 1000px; margin: 0 auto; }
-.story-panel { position: relative; border-radius: 20px; overflow: hidden; box-shadow: var(--glass-shadow); transition: transform .3s; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); }
-.story-panel:hover { transform: translateY(-5px); box-shadow: 0 16px 48px rgba(61,44,44,.12); }
-.story-img { width: 100%; aspect-ratio: 4/3; overflow: hidden; }
-.story-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
-.story-panel:hover .story-img img { transform: scale(1.05); }
-.story-caption { padding: 20px 24px; }
-.story-num { font-family: var(--font-en); font-size: 2rem; font-weight: 700; color: var(--rose); opacity: .3; line-height: 1; }
-.story-caption h3 { font-family: var(--font-cn); font-size: 1.15rem; color: var(--brown); margin: 4px 0 6px; }
-.story-caption h3 em { font-family: var(--font-en); font-style: italic; font-weight: 400; color: var(--rose); font-size: .85rem; margin-left: 6px; }
-.story-caption p { font-size: .88rem; color: var(--text-muted); }
-
-/* ============================================================
    MOMENT — 园林婚纱照，iOS 玻璃相框
    外层玻璃作卡纸边框，内层照片圆角内嵌，悬停轻微推近
    ============================================================ */
-.moment-frame { max-width: 520px; margin: 0 auto; padding: 14px; background: var(--glass-bg-strong); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 32px; box-shadow: var(--glass-shadow); will-change: transform; }
+.moment-frame { max-width: 520px; margin: 0 auto; padding: 16px; background: var(--glass-bg-strong); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 34px; box-shadow: var(--glass-shadow); will-change: transform; }
 .moment-photo { border-radius: 22px; overflow: hidden; }
 .moment-photo img { width: 100%; aspect-ratio: 3/4; object-fit: cover; transition: transform .9s cubic-bezier(.22,.61,.36,1); }
 .moment-frame:hover .moment-photo img { transform: scale(1.035); }
@@ -142,10 +131,10 @@ ul { list-style: none; }
    VENUE
    ============================================================ */
 .venue-main { display: flex; align-items: center; gap: 40px; max-width: 900px; margin: 0 auto 50px; }
-.venue-logo-card { flex: 1; text-align: center; padding: 36px 28px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: var(--r-lg); box-shadow: var(--glass-shadow); }
-.venue-logo-card img { width: 100px; margin: 0 auto 16px; border-radius: 50%; box-shadow: 0 4px 16px rgba(0,0,0,.08); }
-.venue-logo-card h3 { font-family: var(--font-cn); font-size: 1.5rem; color: var(--brown); margin-bottom: 8px; }
-.venue-logo-card p { color: var(--text-muted); font-size: .9rem; }
+/* 酒店名直排于背景之上，不衬卡片 */
+.venue-head { flex: 1; text-align: center; }
+.venue-head h3 { font-family: var(--font-cn); font-size: clamp(1.5rem, 2.6vw, 1.9rem); font-weight: 600; color: var(--brown); letter-spacing: .14em; margin-bottom: 10px; text-shadow: 0 1px 14px rgba(253,248,242,.85); }
+.venue-head p { color: var(--brown-light); font-size: .92rem; letter-spacing: .08em; text-shadow: 0 1px 12px rgba(253,248,242,.85); }
 .venue-guide-cartoon { flex: 0 0 240px; will-change: transform; }
 .venue-guide-cartoon img { width: 100%; filter: drop-shadow(0 6px 18px rgba(0,0,0,.12)); }
 .venue-photos { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 700px; margin: 0 auto 40px; }
@@ -184,6 +173,15 @@ ul { list-style: none; }
 .rsvp-qr p { font-size: .8rem; color: var(--text-muted); letter-spacing: .08em; }
 
 /* ============================================================
+   CHAMPAGNE HAIRLINE — 主卡片统一香槟金流光发丝边
+   双层 background：padding 层玻璃底色，border 层 135° 金白渐变
+   ============================================================ */
+.invitation-card, .moment-frame, .rsvp-card, .venue-info-card, .sched-content, .btn-map {
+    border: 1px solid transparent;
+    background: linear-gradient(var(--glass-bg-strong), var(--glass-bg-strong)) padding-box, var(--glass-edge) border-box;
+}
+
+/* ============================================================
    FOOTER
    ============================================================ */
 .footer { background: rgba(255,255,255,.45); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-top: 1px solid var(--glass-border); box-shadow: inset 0 1px 0 rgba(255,255,255,.55); padding: 70px 0; text-align: center; position: relative; z-index: 1; }
@@ -206,7 +204,6 @@ ul { list-style: none; }
 @media (max-width: 900px) {
     .invitation-layout { flex-direction: column; }
     .invitation-cartoon { flex: 0 0 auto; max-width: 200px; }
-    .story-grid { grid-template-columns: 1fr; gap: 20px; }
     .gallery-polaroid-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
     .venue-main { flex-direction: column; }
     .venue-guide-cartoon { flex: 0 0 auto; max-width: 180px; }
