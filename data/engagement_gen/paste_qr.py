@@ -35,7 +35,24 @@ SET_RECTS = {
         "b": (1328, 654, 384, 292),
         "c": (1328, 654, 384, 292),
     },
+    "scene": {  # 场景套装牌面，成图实测（模型会挪牌位/改尺寸）
+        "a": (1440, 525, 225, 216),
+        "b": (1337, 861, 381, 276),
+        "c": (1350, 614, 304, 263),
+    },
 }
+
+
+def crop_quiet(qr_img, margin_px=24):
+    """裁掉源二维码过宽的安静区（约 9%），只留 ~2 模块白边，让码贴得更大。"""
+    gray = cv2.cvtColor(qr_img, cv2.COLOR_BGR2GRAY)
+    _, th = cv2.threshold(gray, 128, 255, cv2.THRESH_BINARY_INV)
+    pts = np.column_stack(np.where(th > 0))
+    y0, x0 = pts.min(axis=0)
+    y1, x1 = pts.max(axis=0)
+    H, W = gray.shape
+    return qr_img[max(0, y0 - margin_px):min(H, y1 + margin_px + 1),
+                  max(0, x0 - margin_px):min(W, x1 + margin_px + 1)]
 
 
 def detect_white_square(img, cx, cy, win):
@@ -78,14 +95,12 @@ def paste(set_name, key, qr_img):
         print(f"⚠️ {set_name}/{key} 检测结果不可信，使用模板缩放坐标")
         bx, by, bw, bh = int(x * sx), int(y * sy), int(w * sx), int(h * sy)
 
-    # 矩形留白内切正方形居中贴码（白边充当安静区），内缩 6%
-    side = min(bw, bh)
-    m = int(side * 0.06)
-    qr_side = side - 2 * m
-    qx = bx + (bw - qr_side) // 2
-    qy = by + (bh - qr_side) // 2
-    qr = cv2.resize(qr_img, (qr_side, qr_side), interpolation=cv2.INTER_LANCZOS4)
-    img[qy:qy + qr_side, qx:qx + qr_side] = qr
+    # 牌面中心居中、短边 94% 填充（源码已裁安静区，牌面白边补足安静区）
+    side = int(min(bw, bh) * 0.94)
+    qx = int(bx + bw / 2 - side / 2)
+    qy = int(by + bh / 2 - side / 2)
+    qr = cv2.resize(qr_img, (side, side), interpolation=cv2.INTER_LANCZOS4)
+    img[qy:qy + side, qx:qx + side] = qr
 
     cv2.imwrite(out_path, img)
     print(f"✅ {set_name}/{key} 成片 → {out_path}")
@@ -101,6 +116,7 @@ def main():
     if qr_img is None:
         print(f"❌ 读取二维码失败: {QR_PATH}")
         raise SystemExit(1)
+    qr_img = crop_quiet(qr_img)
 
     for key in (args.only or list(SET_RECTS[args.set])):
         paste(args.set, key, qr_img)
