@@ -143,6 +143,10 @@ ul { list-style: none; }
 .moment-caption { padding: 18px 12px 10px; text-align: center; }
 .moment-cn { font-family: var(--font-cn); font-size: 1rem; color: var(--brown); letter-spacing: .12em; }
 .moment-en { font-family: var(--font-en); font-style: italic; font-size: .85rem; color: var(--text-muted); margin-top: 4px; }
+/* 横幅宽框：漏窗前并肩、窗前轻吻两张横构图，框身加宽、比例随原图不裁切 */
+.moment-frame.moment-wide { max-width: 760px; margin: 48px auto 0; }
+.moment-photo.ratio-4x3 img { aspect-ratio: 4/3; }
+.moment-photo.ratio-16x9 img { aspect-ratio: 16/9; }
 
 /* ============================================================
    GALLERY — removed (no real photos)
@@ -272,4 +276,5 @@ ul { list-style: none; }
     .qr-img { width: 190px; }
     .moment-frame { padding: 10px; border-radius: 26px; }
     .moment-photo { border-radius: 18px; }
+    .moment-frame.moment-wide { margin-top: 28px; }
 }
