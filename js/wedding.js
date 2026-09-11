@@ -6,10 +6,10 @@
     'use strict';
 
     /* ========================================================
-       COUNTDOWN — Target: 2026-09-28 17:00 CST
+       COUNTDOWN — Target: 2026-09-28 15:00 CST（迎宾开始）
        只保留"剩余天数"，作为请柬卡内的一行小胶囊
        ======================================================== */
-    const WEDDING = new Date('2026-09-28T17:00:00+08:00');
+    const WEDDING = new Date('2026-09-28T15:00:00+08:00');
     const cdPill = document.getElementById('countdownPill');
 
     function tick() {
