@@ -1,9 +1,13 @@
-# 0928.love 婚礼网站 — 设计文档（v24 · 2026-09-11）
+# 0928.love 婚礼网站 — 设计文档（v25 · 2026-09-11）
 
 ## 一、当前视觉方向
 
 ### 核心概念：真实婚纱照作底，玻璃卡片叙事，全站单一光源
-- **光源系统（v24）**：全站光源统一设定在**页面左上角，向右下照射**。三层落地：① `.site-bg::before` 左上暖色柔光晕 + `::after` 两道极淡 115° 斜向光束（天然指向右下），随滚动进度缓慢漂移，叠 16s/11s 极慢呼吸 keyframes（静止时也有生气）；② 每张玻璃卡 `::after` 斜向 specular 扫光带随滚动从左上缓缓扫向右下、`::before` 右下内角暖金折射光斑渐亮；③ 所有投影/焦散统一偏右下。光场位于卡片 backdrop-filter 采样范围内，被玻璃自动折射模糊——"光透过玻璃"零额外代码。
+- **光源系统（v24 定向 + v25 体积阳光）**：全站光源统一设定在**页面左上角，向右下照射**。v25 按动画/阳光摄影语言重做为**前后两层体积光**：
+  - **背景层**（`.site-bg`）：左上过曝热核 + 大暖晕（screen 加色于照片）；`::after` 宽软 conic 扇形光柱（blur 14px、screen），经卡片 backdrop-filter 折射发虚 = 深层光；底叠**曝光压暗纱**（全页暖棕 .07）+ **暗角**（四角 .30）——高调奶白底不压暗则光柱无法显影（摄影曝光逻辑）。
+  - **前景层**（`.sun-field`，fixed z-index 5 压内容之上）：从光源点扇形射出的**窄楔形 god rays**（亮核 .50 + 暖金边、blur 5px、13s 极慢摇摆且 transform-origin 钉在光源）+ 沿光路三枚镜头光晕 + 逆光**浮尘微粒**（12 枚 radial 点，漂移 + 明灭双动画）。**关键教训：页面是高调亮底，screen/加色混合在亮底上恒等于白（不可见），前景光柱必须用"有颜色的暖金" source-over 上色**；screen 只留给背景层对照片加光。
+  - **卡片层**（v24）：`::after` specular 扫光带随滚动左上扫右下、`::before` 右下折射暖斑；所有投影/焦散偏右下。
+  - 三层叠加 = 层次感：背景光虚、前景光锐、卡片扫光随视口动；背景光在卡片 backdrop-filter 采样范围内被自动折射——"光透过玻璃"零额外代码。
 - **固定背景**：`img/couple_portrait.webp`（卡其色端庄婚纱照）由 `.site-bg` fixed 层铺满全页、**不随内容滚动**；上层叠一条奶油色轻纱渐变（`linear-gradient` 同层 background-image），压高光、托卡片。
 - **iOS 玻璃 + 香槟金发丝边（v24 通透折射配方）**：所有卡片/导航/页脚统一配方 —— 150° 渐变玻璃体（左上受光 .44 → 中段最透 .05 让背景充分透出 → 右下暖金回升 .20）+ `backdrop-filter: blur(32px) saturate(188%) brightness(1.07) contrast(1.02)` + 环边流光（左上纯白锐亮受光边、右下暖金折射角、conic 香槟金绕边）+ 方向外影（贴地小影 + 弥散大影偏右下 + 右下暖色焦散斑 `rgba(212,165,116,.38)`）+ inset 左上 1.5px 锐亮边与右下内壁暖金折射。集中定义在 `css/wedding.css` 的 `--glass-*` 变量，改配方只改变量；发丝边统一加在 `.invitation-card / .moment-frame / .rsvp-card / .venue-info-card / .sched-content / .btn-map`。
 - **文字作框**：hero 文字退到上下两端（eyebrow / 日期），中央完全留给背景照片；上下各一条奶油色渐隐纱保证可读。
@@ -38,7 +42,7 @@
 - 滚动 reveal：IntersectionObserver 加 `.visible`。
 - 视差：`[data-parallax]` 元素按速率 translate3d（RAF 节流）。
 - **滚动光影（v24）**：`updateLightField()` 挂在同一 RAF scroll 循环，写两个 CSS 变量——
-  - `--scroll-p`（0~1 页面进度，量化 .005）写在 **`.site-bg` 元素而非 `:root`**，样式失效范围收缩到两个伪元素，驱动光晕/光束 `translate` 漂移；
+  - `--scroll-p`（0~1 页面进度，量化 .005）同写 **`.site-bg` 与 `.sun-field` 两个光层元素（而非 `:root`）**，样式失效范围各自收缩到本元素伪元素，驱动光晕/光柱 `translate` 漂移；
   - `--lit`（0~1 卡片穿越视口进度，量化 .025）写在每张玻璃卡上，仅更新视口内卡片；驱动 `::after` 扫光带 `translate3d` + 抛物线 opacity 包络 `lit*(1-lit)*3.4`（两端淡出不穿帮）与 `::before` 折射暖斑 opacity。
   - 性能约定：伪元素只动 **transform/opacity**（合成器属性），CSS 端 `.3s linear` transition 抹平量化台阶；不主动加 `will-change`（13 卡×2 伪元素会撑 iOS 层内存）；帧内读写分离（先集中读 rect 再集中写变量）。
   - 未用 CSS scroll-driven animations（`animation-timeline: view()` 需 Safari 26+，宾客以 iOS 17/18 为主）；消费端 CSS 已按变量协议写好，未来可删 JS 平替。
@@ -53,5 +57,6 @@
 - v21：Liquid Glass 三层配方 —— 低透明 158° 渐变玻璃体 + 斜向高光带 + conic 香槟金环边流光（含双角高光）；blur 调为 28px/saturate 180%/brightness 1.08；阴影改贴地 + 弥散双影 + 四侧内壁受光；无 backdrop-filter 时 `@supports` 降级不透明白底。
 - v22：MOMENT 新增两横幅玻璃宽框（园林漏窗前并肩 4:3、窗前轻吻 16:9）；`.moment-wide` 宽框 max-width 760px、比例随原图不裁切；20MB/16MB 原片压为 webp 106KB/36KB。
 - v23：婚礼流程时间线重排为四步 run-of-show（迎宾 / 仪式 / 合影 / 晚宴），倒计时目标同步为 15:00 迎宾开始。
-- **v24（当前）**：滚动动态光影 + 通透折射玻璃 —— 全站光源定于左上角向右下照射；`.site-bg` 双伪元素光场（暖光晕 + 斜光束，随 `--scroll-p` 漂移 + 极慢呼吸）；卡片 specular 扫光带与右下折射暖斑随 `--lit` 动；玻璃配方改通透折射（中段 .05 更透、左上 1.5px 锐亮边、右下暖金 inset、外影偏右下含暖焦散斑、blur 32px + contrast 1.02）；hover/nav/footer/抽屉/@supports 五处同步同一光源语言；补齐 `prefers-reduced-motion` 实现。
+- v24：滚动动态光影 + 通透折射玻璃 —— 全站光源定于左上角向右下照射；卡片 specular 扫光带与右下折射暖斑随 `--lit` 动；玻璃配方改通透折射（中段 .05 更透、左上 1.5px 锐亮边、右下暖金 inset、外影偏右下含暖焦散斑、blur 32px + contrast 1.02）；hover/nav/footer/抽屉/@supports 五处同步同一光源语言；补齐 `prefers-reduced-motion` 实现。
+- **v25（当前）**：体积阳光层 —— 用户反馈 v24 光"不明显、无质感层次"，按动画/阳光摄影重做：新增前景 `.sun-field` 固定层（窄楔形 god rays 扇形光柱 + 镜头光晕 + 逆光浮尘，普通混合暖金上色）；背景层改过曝热核 + 宽软 screen 光柱；`.site-bg` 加曝光压暗纱与暗角让光显影；卡片扫光带提亮（峰 .32）；`--scroll-p` 同写两光层；reduced-motion 覆盖新层。
 - 更早的「七章视差画卷」方案与 AI 图片清单已过期，见 git 历史中的旧版 DESIGN_DOC。

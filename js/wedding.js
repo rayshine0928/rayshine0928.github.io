@@ -68,7 +68,8 @@
        transition 把台阶抹成连续滑动（跑在合成器上）
        ======================================================== */
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const siteBg = document.querySelector('.site-bg');
+    /* --scroll-p 同写两个光层元素（不写 :root，失效范围各自收缩到本元素伪元素） */
+    const lightLayers = [document.querySelector('.site-bg'), document.querySelector('.sun-field')].filter(Boolean);
     const litCards = document.querySelectorAll(
         '.invitation-card, .moment-frame, .rsvp-card, .venue-info-card, .sched-content');
     let lastP = -1;
@@ -81,8 +82,8 @@
         const max = document.documentElement.scrollHeight - vh;
         const p = max > 0 ? Math.min(1, Math.max(0, sy / max)) : 0;
         const pq = Math.round(p * 200) / 200;
-        if (siteBg && pq !== lastP) {
-            siteBg.style.setProperty('--scroll-p', pq);
+        if (pq !== lastP) {
+            lightLayers.forEach(el => el.style.setProperty('--scroll-p', pq));
             lastP = pq;
         }
 
@@ -107,7 +108,7 @@
     /* 减弱动效偏好中途切换：清除内联变量回落静态光照 / 恢复滚动驱动 */
     reduceMotion.addEventListener('change', () => {
         if (reduceMotion.matches) {
-            if (siteBg) siteBg.style.removeProperty('--scroll-p');
+            lightLayers.forEach(el => el.style.removeProperty('--scroll-p'));
             litCards.forEach(el => { el.style.removeProperty('--lit'); el._lit = undefined; });
         } else { lastP = -1; updateLightField(); }
     });

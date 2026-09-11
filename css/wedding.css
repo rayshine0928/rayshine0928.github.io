@@ -83,9 +83,9 @@ ul { list-style: none; }
    上层叠一条奶油色轻纱，压住高光、托起玻璃卡片
    ============================================================ */
 .site-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; background-color: var(--cream);
-    background-image: linear-gradient(to bottom, rgba(253,248,242,.3), rgba(253,248,242,.1) 28%, rgba(253,248,242,.1) 72%, rgba(253,248,242,.36)), url('../img/couple_portrait.jpg');
-    background-image: linear-gradient(to bottom, rgba(253,248,242,.3), rgba(253,248,242,.1) 28%, rgba(253,248,242,.1) 72%, rgba(253,248,242,.36)), image-set(url('../img/couple_portrait.webp') type('image/webp'), url('../img/couple_portrait.jpg') type('image/jpeg'));
-    background-size: cover, cover; background-position: center, center 38%; background-repeat: no-repeat; }
+    background-image: radial-gradient(120% 92% at 50% 42%, transparent 50%, rgba(93,64,55,.14) 78%, rgba(74,50,44,.30) 100%), linear-gradient(rgba(122,86,66,.07), rgba(122,86,66,.07)), linear-gradient(to bottom, rgba(253,248,242,.3), rgba(253,248,242,.1) 28%, rgba(253,248,242,.1) 72%, rgba(253,248,242,.36)), url('../img/couple_portrait.jpg');
+    background-image: radial-gradient(120% 92% at 50% 42%, transparent 50%, rgba(93,64,55,.14) 78%, rgba(74,50,44,.30) 100%), linear-gradient(rgba(122,86,66,.07), rgba(122,86,66,.07)), linear-gradient(to bottom, rgba(253,248,242,.3), rgba(253,248,242,.1) 28%, rgba(253,248,242,.1) 72%, rgba(253,248,242,.36)), image-set(url('../img/couple_portrait.webp') type('image/webp'), url('../img/couple_portrait.jpg') type('image/jpeg'));
+    background-size: cover, cover, cover, cover; background-position: center, center, center, center 38%; background-repeat: no-repeat; }
 
 /* ============================================================
    V24 LIGHT FIELD — 全站光源：左上暖光晕 + 两道斜向光束（115deg 天然指向右下）
@@ -100,21 +100,83 @@ ul { list-style: none; }
 .site-bg::before, .site-bg::after { content: ''; position: absolute; pointer-events: none; }
 .site-bg::before {
     inset: -25% -15% auto -15%; height: 95%;
-    background: radial-gradient(52vmax 42vmax at 6% 0%,
-        rgba(255,240,216,.48) 0%, rgba(255,232,202,.20) 40%, rgba(255,228,196,0) 72%);
+    /* 过曝热核 + 大范围暖晕：摄影里光源本身要"亮到发白" */
+    background:
+        radial-gradient(16vmax 12vmax at 5% -2%, rgba(255,253,244,.95) 0%, rgba(255,246,222,.5) 45%, rgba(255,244,214,0) 75%),
+        radial-gradient(52vmax 42vmax at 6% 0%,
+            rgba(255,240,216,.62) 0%, rgba(255,232,202,.28) 40%, rgba(255,228,196,0) 72%);
+    mix-blend-mode: screen;
     translate: calc(var(--scroll-p, 0) * 4vmax) calc(var(--scroll-p, 0) * 8vmax);
     animation: glowBreathe 16s ease-in-out infinite alternate;
 }
 .site-bg::after {
     inset: -20%;
-    background:
-        linear-gradient(115deg, transparent 15%, rgba(255,248,232,.11) 17.5%, rgba(255,244,224,.04) 20.5%, transparent 23.5%),
-        linear-gradient(115deg, transparent 32%, rgba(255,248,232,.07) 34%, rgba(255,244,224,.02) 36.5%, transparent 39%);
+    /* 背景层光柱：从左上光源点扇形展开（conic），经卡片 backdrop-filter 折射 = 深层光 */
+    background: conic-gradient(from 0deg at -8% -6%,
+        transparent 94deg, rgba(255,246,224,.14) 99deg, rgba(255,250,236,.34) 104deg, rgba(255,246,224,.11) 110deg, transparent 116deg,
+        transparent 127deg, rgba(255,246,224,.10) 131deg, rgba(255,250,236,.24) 136deg, rgba(255,246,224,.07) 142deg, transparent 148deg,
+        transparent 157deg, rgba(255,246,224,.08) 161deg, rgba(255,250,236,.17) 165deg, transparent 171deg,
+        transparent 360deg);
+    filter: blur(14px);
+    mix-blend-mode: screen;
     translate: calc(var(--scroll-p, 0) * 3vmax) calc(var(--scroll-p, 0) * 6vmax);
     animation: beamBreathe 11s ease-in-out infinite alternate;
 }
 @keyframes glowBreathe { from { transform: scale(1); } to { transform: scale(1.07) translate3d(1.2vmax, .8vmax, 0); } }
-@keyframes beamBreathe { from { opacity: .5; } to { opacity: 1; } }
+@keyframes beamBreathe { from { opacity: .55; } to { opacity: 1; } }
+
+/* ============================================================
+   V25 SUN FIELD — 前景体积阳光层（fixed 于内容之上、导航之下）
+   模仿动画/阳光摄影的四要素：
+   ① 元素本体：暖棕暗角（镜头曝光感，压四角提中心对比，让光柱"显影"）
+   ② ::before  从左上光源扇形射出的 god rays + 沿光路三枚镜头光晕，
+               blur 柔边 + screen 加色混合 + 极慢摇摆（transform-origin 钉在光源）
+   ③ ::after   光柱中的浮尘微粒，双层动画（漂移 transform + 明灭 opacity）
+   与 .site-bg 背景光柱构成前后两层：背景光被玻璃折射发虚、前景光锐利压过
+   卡片 —— 层次感的来源。--scroll-p 由 JS 同写本层，随滚动整体缓移。
+   ============================================================ */
+/* 普通混合 + 带色光柱：页面是高调奶白底，screen 加色在亮底上恒等于白（不可见），
+   故前景光柱用"有颜色的暖金"source-over 上色，靠底色压暗纱与暗角显影 */
+.sun-field { position: fixed; inset: 0; z-index: 5; pointer-events: none; }
+.sun-field::before {
+    content: ''; position: absolute; inset: -22%;
+    background:
+        radial-gradient(6vmax 6vmax at 24% 20%, rgba(255,206,138,.38), rgba(255,206,138,0) 70%),
+        radial-gradient(3.2vmax 3.2vmax at 39% 35%, rgba(255,198,124,.32), rgba(255,198,124,0) 70%),
+        radial-gradient(10vmax 10vmax at 64% 60%, rgba(255,190,110,.18), rgba(255,190,110,0) 70%),
+        /* 窄楔形 + 亮核 + 暖边 = 动画里轮廓可辨的光柱；四束疏密不等 */
+        conic-gradient(from 0deg at -6% -4%,
+            transparent 97deg, rgba(255,214,150,.16) 100deg, rgba(255,244,214,.50) 103.5deg, rgba(255,214,150,.16) 107deg, transparent 110deg,
+            transparent 121deg, rgba(255,214,150,.13) 124deg, rgba(255,244,214,.38) 127.5deg, rgba(255,214,150,.13) 131deg, transparent 134deg,
+            transparent 143deg, rgba(255,214,150,.10) 146deg, rgba(255,244,214,.30) 149deg, rgba(255,214,150,.10) 152deg, transparent 155deg,
+            transparent 162deg, rgba(255,214,150,.08) 164.5deg, rgba(255,244,214,.22) 167deg, transparent 170deg,
+            transparent 360deg);
+    filter: blur(5px);
+    transform-origin: 8% 6%;
+    translate: calc(var(--scroll-p, 0) * 2vmax) calc(var(--scroll-p, 0) * 5vmax);
+    animation: raySway 13s ease-in-out infinite alternate;
+}
+@keyframes raySway { from { transform: rotate(-.8deg); } to { transform: rotate(1deg); } }
+.sun-field::after {
+    content: ''; position: absolute; inset: -12%;
+    /* 浮尘：沿光路对角散布的微粒，screen 混合下如逆光尘埃 */
+    background-image:
+        radial-gradient(3.2px 3.2px at 17% 24%, rgba(255,250,235,1), rgba(255,250,235,0) 60%),
+        radial-gradient(2.2px 2.2px at 29% 41%, rgba(255,246,222,.9), rgba(255,246,222,0) 60%),
+        radial-gradient(3.8px 3.8px at 42% 28%, rgba(255,252,242,.8), rgba(255,252,242,0) 60%),
+        radial-gradient(1.8px 1.8px at 50% 55%, rgba(255,246,222,.95), rgba(255,246,222,0) 60%),
+        radial-gradient(2.6px 2.6px at 61% 39%, rgba(255,250,235,.75), rgba(255,250,235,0) 60%),
+        radial-gradient(2px 2px at 70% 63%, rgba(255,246,222,.85), rgba(255,246,222,0) 60%),
+        radial-gradient(3.4px 3.4px at 25% 66%, rgba(255,252,242,.7), rgba(255,252,242,0) 60%),
+        radial-gradient(1.8px 1.8px at 80% 28%, rgba(255,250,235,.8), rgba(255,250,235,0) 60%),
+        radial-gradient(2.4px 2.4px at 56% 76%, rgba(255,246,222,.7), rgba(255,246,222,0) 60%),
+        radial-gradient(1.8px 1.8px at 11% 50%, rgba(255,252,242,.8), rgba(255,252,242,0) 60%),
+        radial-gradient(1.5px 1.5px at 36% 72%, rgba(255,250,235,.75), rgba(255,250,235,0) 60%),
+        radial-gradient(2.8px 2.8px at 86% 52%, rgba(255,246,222,.65), rgba(255,246,222,0) 60%);
+    animation: dustDrift 30s ease-in-out infinite alternate, dustTwinkle 6.5s ease-in-out infinite alternate;
+}
+@keyframes dustDrift { from { transform: translate3d(-1vmax, -1.2vmax, 0); } to { transform: translate3d(2.4vmax, 3.2vmax, 0); } }
+@keyframes dustTwinkle { from { opacity: .7; } to { opacity: 1; } }
 
 /* ============================================================
    HERO — 文字退到上下两端作"画框"，中央留给固定背景婚纱照
@@ -267,8 +329,8 @@ ul { list-style: none; }
     content: ''; position: absolute; top: -35%; left: 0; width: 44%; height: 170%;
     pointer-events: none;
     background: linear-gradient(100deg,
-        transparent 0%, rgba(255,255,255,.03) 24%, rgba(255,255,255,.20) 46%,
-        rgba(255,252,244,.24) 54%, rgba(255,255,255,.04) 76%, transparent 100%);
+        transparent 0%, rgba(255,255,255,.04) 24%, rgba(255,255,255,.26) 46%,
+        rgba(255,252,244,.32) 54%, rgba(255,255,255,.06) 76%, transparent 100%);
     /* lit=0 带在卡左外 [-57%,-13%]，lit=1 在右外 [97%,141%]，rotate 与 100deg 渐变合成斜向带 */
     transform: translate3d(calc(-130% + var(--lit, .42) * 350%), 0, 0) rotate(10deg);
     opacity: calc(var(--lit, .42) * (1 - var(--lit, .42)) * 3.4);
@@ -307,7 +369,7 @@ ul { list-style: none; }
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
-    .site-bg::before, .site-bg::after, .scroll-line { animation: none; }
+    .site-bg::before, .site-bg::after, .sun-field::before, .sun-field::after, .scroll-line { animation: none; }
     .invitation-card::before, .invitation-card::after,
     .moment-frame::before, .moment-frame::after,
     .rsvp-card::before, .rsvp-card::after,
