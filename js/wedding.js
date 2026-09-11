@@ -58,9 +58,64 @@
         });
     }
 
+    /* ========================================================
+       V24 LIGHT FIELD — 滚动驱动光影（光源在左上，向右下照射）
+       --scroll-p → .site-bg 本元素（全局进度，驱动光晕/光束漂移；
+                    不写 :root，样式失效范围收缩到两个伪元素）
+       --lit      → 各玻璃卡（0=顶边抵视口底，1=底边出视口顶，
+                    驱动 ::after 扫光带与 ::before 折射暖斑）
+       量化步长（.005 / .025）+ 仅视口内更新，CSS 端 .3s linear
+       transition 把台阶抹成连续滑动（跑在合成器上）
+       ======================================================== */
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const siteBg = document.querySelector('.site-bg');
+    const litCards = document.querySelectorAll(
+        '.invitation-card, .moment-frame, .rsvp-card, .venue-info-card, .sched-content');
+    let lastP = -1;
+
+    function updateLightField() {
+        if (reduceMotion.matches) return;  /* 减弱动效：停更，CSS 兜底值 = 静态但完整的光照 */
+        const sy = window.pageYOffset, vh = window.innerHeight;
+
+        /* 全局进度（量化 0.005） */
+        const max = document.documentElement.scrollHeight - vh;
+        const p = max > 0 ? Math.min(1, Math.max(0, sy / max)) : 0;
+        const pq = Math.round(p * 200) / 200;
+        if (siteBg && pq !== lastP) {
+            siteBg.style.setProperty('--scroll-p', pq);
+            lastP = pq;
+        }
+
+        /* 逐卡光位：帧内读写分离 —— 先集中读 rect（本帧唯一一次强制布局，
+           不缓存 offsetTop：懒加载图片/字体 swap/reveal/parallax 都会让缓存漂移），
+           再集中写变量（写自定义属性不弄脏布局） */
+        const visible = [];
+        litCards.forEach(el => {
+            const r = el.getBoundingClientRect();
+            if (r.bottom > 0 && r.top < vh) visible.push([el, r]);
+        });
+        visible.forEach(([el, r]) => {
+            const lit = Math.min(1, Math.max(0, (vh - r.top) / (vh + r.height)));
+            const lq = Math.round(lit * 40) / 40;  /* 量化 0.025 */
+            if (el._lit !== lq) {
+                el.style.setProperty('--lit', lq);
+                el._lit = lq;
+            }
+        });
+    }
+
+    /* 减弱动效偏好中途切换：清除内联变量回落静态光照 / 恢复滚动驱动 */
+    reduceMotion.addEventListener('change', () => {
+        if (reduceMotion.matches) {
+            if (siteBg) siteBg.style.removeProperty('--scroll-p');
+            litCards.forEach(el => { el.style.removeProperty('--lit'); el._lit = undefined; });
+        } else { lastP = -1; updateLightField(); }
+    });
+
     window.addEventListener('scroll', () => {
-        if (!raf) raf = requestAnimationFrame(() => { updateParallax(); raf = null; });
+        if (!raf) raf = requestAnimationFrame(() => { updateLightField(); updateParallax(); raf = null; });
     }, { passive: true });
+    updateLightField();
     updateParallax();
 
     /* ========================================================

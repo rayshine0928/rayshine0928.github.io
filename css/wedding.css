@@ -13,35 +13,37 @@
     --font-en: 'Playfair Display', 'Cormorant Garamond', serif;
     --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --nav-h: 70px; --max-w: 1200px;
-    /* iOS 26 Liquid Glass — 低不透明度渐变玻璃体 + 深模糊提亮 + conic 环边流光 + 多层光影
-       玻璃体：顶部受光较亮 → 中段最透（背景透出）→ 底部反光回升，附一道斜向高光带 */
+    /* iOS 26 Liquid Glass v24 — 全站光源定于左上角，向右下照射
+       玻璃体：左上受光亮 → 中段最透（背景充分透出）→ 右下暖金回升（光穿玻璃折射聚暖） */
     --glass-bg: rgba(255,255,255,.3);
     --glass-bg-strong: rgba(255,255,255,.42);
     --glass-border: rgba(255,255,255,.5);
-    --glass-fill: linear-gradient(158deg,
-        rgba(255,255,255,.40) 0%, rgba(255,255,255,.16) 22%, rgba(255,255,255,.07) 46%,
-        rgba(255,255,255,.11) 68%, rgba(255,255,255,.24) 88%, rgba(255,255,255,.34) 100%);
+    --glass-fill: linear-gradient(150deg,
+        rgba(255,255,255,.44) 0%, rgba(255,255,255,.18) 20%, rgba(255,255,255,.05) 46%,
+        rgba(255,255,255,.05) 64%, rgba(255,251,244,.10) 84%, rgba(252,242,229,.20) 100%);
+    /* 静态斜向高光带调淡 —— 动态 specular 由卡片 ::after 扫光带接管，避免双带打架 */
     --glass-scrim: linear-gradient(115deg,
-        transparent 0%, transparent 36%, rgba(255,255,255,.14) 44%, rgba(255,255,255,.03) 52%, transparent 60%);
-    --glass-blur: blur(28px) saturate(180%) brightness(1.08);
-    /* 外影两层（贴地小影 + 弥散大影）+ 边缘受光 + 内壁柔光，模拟玻璃厚度 */
+        transparent 0%, transparent 40%, rgba(255,255,255,.07) 47%, rgba(255,255,255,.02) 53%, transparent 60%);
+    --glass-blur: blur(32px) saturate(188%) brightness(1.07) contrast(1.02);
+    /* 外影统一偏右下（光从左上来）：贴地小影 + 弥散大影 + 暖色焦散斑（光透过玻璃在右下聚焦）；
+       inset：左上 1.5px 锐亮边 + 右下内壁暖金折射 + 整体柔光 */
     --glass-shadow:
         0 1px 2px rgba(61,44,44,.05),
-        0 22px 50px -14px rgba(61,44,44,.22),
-        inset 0 1px 1px rgba(255,255,255,.6),
-        inset 0 -1px 1px rgba(255,255,255,.3),
-        inset 1px 0 1px rgba(255,255,255,.16),
-        inset -1px 0 1px rgba(255,255,255,.16),
-        inset 0 0 34px rgba(255,255,255,.09);
-    /* 香槟金环边流光：conic 渐变绕边缘一周模拟光在斜面上折射游走，
-       再叠两枚角部镜面高光（玻璃曲率在角上聚光），均裁在 1px border 环内 */
+        6px 10px 20px -8px rgba(61,44,44,.13),
+        16px 28px 52px -18px rgba(61,44,44,.20),
+        14px 20px 38px -14px rgba(212,165,116,.38),
+        inset 1.5px 1.5px 1px -.5px rgba(255,255,255,.85),
+        inset -10px -12px 26px -12px rgba(212,165,116,.22),
+        inset 0 0 30px rgba(255,255,255,.07);
+    /* 环边：左上角径向高光提到纯白更锐（受光面），右下角换暖金（折射面），
+       conic 香槟金流光绕边一周模拟光在斜面上游走，均裁在 1px border 环内 */
     --glass-edge:
-        radial-gradient(140% 90% at 6% 0%, rgba(255,255,255,.95), rgba(255,255,255,0) 55%),
-        radial-gradient(90% 140% at 100% 100%, rgba(255,255,255,.55), rgba(255,255,255,0) 50%),
+        radial-gradient(125% 85% at 1% -2%, rgba(255,255,255,1) 0%, rgba(255,255,255,.55) 18%, rgba(255,255,255,0) 46%),
+        radial-gradient(85% 125% at 100% 100%, rgba(212,165,116,.65) 0%, rgba(212,165,116,.18) 26%, rgba(212,165,116,0) 50%),
         conic-gradient(from 210deg at 50% 42%,
-            rgba(255,255,255,.95) 0deg, rgba(255,255,255,.30) 35deg, rgba(212,165,116,.55) 80deg,
-            rgba(255,255,255,.20) 130deg, rgba(255,255,255,.85) 180deg, rgba(255,255,255,.24) 225deg,
-            rgba(174,131,82,.45) 275deg, rgba(255,255,255,.30) 320deg, rgba(255,255,255,.95) 360deg);
+            rgba(255,255,255,.95) 0deg, rgba(255,255,255,.32) 35deg, rgba(212,165,116,.50) 80deg,
+            rgba(255,255,255,.18) 130deg, rgba(255,255,255,.80) 180deg, rgba(255,255,255,.22) 225deg,
+            rgba(174,131,82,.55) 275deg, rgba(255,255,255,.35) 320deg, rgba(255,255,255,.95) 360deg);
     --gold-deep: #AE8352;
     --r-lg: 28px; --r-md: 18px;
 }
@@ -64,7 +66,7 @@ ul { list-style: none; }
    NAVIGATION
    ============================================================ */
 .nav { position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; padding: 0 24px; transition: .6s; }
-.nav.scrolled { background: linear-gradient(to bottom, rgba(255,255,255,.42), rgba(255,255,255,.22)); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-bottom: 1px solid rgba(255,255,255,.45); box-shadow: 0 1px 1px rgba(61,44,44,.03), 0 10px 30px -10px rgba(61,44,44,.12), inset 0 1px 0 rgba(255,255,255,.6); }
+.nav.scrolled { background: linear-gradient(to bottom, rgba(255,255,255,.40), rgba(255,255,255,.18)); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-bottom: 1px solid rgba(255,255,255,.45); box-shadow: 0 1px 2px rgba(61,44,44,.04), 0 14px 30px -12px rgba(61,44,44,.14), 0 10px 24px -12px rgba(212,165,116,.16), inset 0 1.5px 0 rgba(255,255,255,.75), inset 0 -8px 16px -12px rgba(212,165,116,.14); }
 .nav-inner { max-width: var(--max-w); margin: 0 auto; display: flex; justify-content: space-between; align-items: center; height: var(--nav-h); }
 .nav-logo { font-family: var(--font-en); font-size: 1.6rem; font-weight: 700; color: var(--brown); letter-spacing: .06em; transition: .6s; }
 .nav.scrolled .nav-logo { color: var(--rose); }
@@ -84,6 +86,35 @@ ul { list-style: none; }
     background-image: linear-gradient(to bottom, rgba(253,248,242,.3), rgba(253,248,242,.1) 28%, rgba(253,248,242,.1) 72%, rgba(253,248,242,.36)), url('../img/couple_portrait.jpg');
     background-image: linear-gradient(to bottom, rgba(253,248,242,.3), rgba(253,248,242,.1) 28%, rgba(253,248,242,.1) 72%, rgba(253,248,242,.36)), image-set(url('../img/couple_portrait.webp') type('image/webp'), url('../img/couple_portrait.jpg') type('image/jpeg'));
     background-size: cover, cover; background-position: center, center 38%; background-repeat: no-repeat; }
+
+/* ============================================================
+   V24 LIGHT FIELD — 全站光源：左上暖光晕 + 两道斜向光束（115deg 天然指向右下）
+   JS 写 --scroll-p 到 .site-bg 本元素（不写 :root，样式失效范围收缩到两个伪元素），
+   漂移由独立 translate 属性承载；idle 呼吸 keyframes 用 transform/opacity —— 按
+   CSS Transforms L2 复合顺序（translate → rotate → scale → transform）互不覆盖。
+   光场位于卡片 backdrop-filter 采样范围内 → 被玻璃自动折射模糊，"光透过玻璃"零额外代码。
+   ============================================================ */
+@property --scroll-p { syntax: '<number>'; inherits: true; initial-value: 0; }
+@property --lit { syntax: '<number>'; inherits: true; initial-value: 0.42; }
+
+.site-bg::before, .site-bg::after { content: ''; position: absolute; pointer-events: none; }
+.site-bg::before {
+    inset: -25% -15% auto -15%; height: 95%;
+    background: radial-gradient(52vmax 42vmax at 6% 0%,
+        rgba(255,240,216,.48) 0%, rgba(255,232,202,.20) 40%, rgba(255,228,196,0) 72%);
+    translate: calc(var(--scroll-p, 0) * 4vmax) calc(var(--scroll-p, 0) * 8vmax);
+    animation: glowBreathe 16s ease-in-out infinite alternate;
+}
+.site-bg::after {
+    inset: -20%;
+    background:
+        linear-gradient(115deg, transparent 15%, rgba(255,248,232,.11) 17.5%, rgba(255,244,224,.04) 20.5%, transparent 23.5%),
+        linear-gradient(115deg, transparent 32%, rgba(255,248,232,.07) 34%, rgba(255,244,224,.02) 36.5%, transparent 39%);
+    translate: calc(var(--scroll-p, 0) * 3vmax) calc(var(--scroll-p, 0) * 6vmax);
+    animation: beamBreathe 11s ease-in-out infinite alternate;
+}
+@keyframes glowBreathe { from { transform: scale(1); } to { transform: scale(1.07) translate3d(1.2vmax, .8vmax, 0); } }
+@keyframes beamBreathe { from { opacity: .5; } to { opacity: 1; } }
 
 /* ============================================================
    HERO — 文字退到上下两端作"画框"，中央留给固定背景婚纱照
@@ -209,32 +240,86 @@ ul { list-style: none; }
         var(--glass-fill) padding-box,
         var(--glass-edge) border-box;
 }
+
+/* ============================================================
+   V24 SPECULAR SWEEP — 每张玻璃卡两层动态光影（只动 transform/opacity，走合成器）
+   ::after  斜向柔白扫光带：随 --lit 0→1（卡片穿越视口）从左上缓缓扫向右下，
+            抛物线包络 lit*(1-lit)*3.4 让两端淡出，进出视口不穿帮
+   ::before 右下内角暖金折射光斑：随 --lit 渐亮（光穿透玻璃在背光角聚暖）
+   兜底：无 JS / reduced-motion 时 --lit 取 .42，呈静态中段高光 —— 静态但完整的光照
+   注：右下外侧焦散影走 --glass-shadow（伪元素会被 overflow:hidden 裁掉）；
+       .btn-map 排除在 sweep 外（胶囊太小且 hover 已有玫瑰金底整体替换）
+   ============================================================ */
+.invitation-card, .moment-frame, .rsvp-card, .venue-info-card, .sched-content {
+    position: relative; overflow: hidden;
+}
+.invitation-card::before, .moment-frame::before, .rsvp-card::before,
+.venue-info-card::before, .sched-content::before {
+    content: ''; position: absolute; right: -16%; bottom: -24%; width: 60%; height: 66%;
+    pointer-events: none;
+    background: radial-gradient(closest-side,
+        rgba(212,165,116,.26), rgba(232,213,183,.08) 55%, rgba(232,213,183,0) 78%);
+    opacity: calc(.25 + var(--lit, .42) * .65);
+    transition: opacity .3s linear;
+}
+.invitation-card::after, .moment-frame::after, .rsvp-card::after,
+.venue-info-card::after, .sched-content::after {
+    content: ''; position: absolute; top: -35%; left: 0; width: 44%; height: 170%;
+    pointer-events: none;
+    background: linear-gradient(100deg,
+        transparent 0%, rgba(255,255,255,.03) 24%, rgba(255,255,255,.20) 46%,
+        rgba(255,252,244,.24) 54%, rgba(255,255,255,.04) 76%, transparent 100%);
+    /* lit=0 带在卡左外 [-57%,-13%]，lit=1 在右外 [97%,141%]，rotate 与 100deg 渐变合成斜向带 */
+    transform: translate3d(calc(-130% + var(--lit, .42) * 350%), 0, 0) rotate(10deg);
+    opacity: calc(var(--lit, .42) * (1 - var(--lit, .42)) * 3.4);
+    transition: transform .3s linear, opacity .3s linear;
+}
 /* 卡片文字加一层极轻的白色文字影，保证更高透明度下的可读性 */
 .invitation-card, .rsvp-card, .sched-content, .venue-info-card { text-shadow: 0 1px 8px rgba(255,255,255,.45); }
+/* 胶囊太矮，150° 渐变被压缩成整片暖调会淹没玫瑰字 —— 独立更白底保可读（hover 玫瑰底仍覆盖） */
+.btn-map { background: linear-gradient(150deg, rgba(255,255,255,.55), rgba(255,251,244,.38)) padding-box, var(--glass-edge) border-box; }
 .invitation-card :is(i, .cd-days-num), .venue-info-card i { text-shadow: none; }
-/* 悬停时边缘流光更亮、外影更深 —— 玻璃被"拿起"的动态感 */
+/* 悬停 = 玻璃被"拿起"：离背景更远 → 影更大更偏右下、焦散更暖（同一光源语言） */
 .venue-info-card, .btn-map { transition: transform .35s cubic-bezier(.22,.61,.36,1), box-shadow .35s, filter .35s; }
 .venue-info-card:hover, .btn-map:hover {
     transform: translateY(-4px);
     box-shadow:
         0 1px 2px rgba(61,44,44,.05),
-        0 30px 60px -14px rgba(61,44,44,.28),
-        inset 0 1px 1px rgba(255,255,255,.7),
-        inset 0 -1px 1px rgba(255,255,255,.35),
-        inset 0 0 34px rgba(255,255,255,.12);
+        8px 14px 26px -8px rgba(61,44,44,.16),
+        24px 40px 68px -18px rgba(61,44,44,.24),
+        18px 28px 46px -14px rgba(212,165,116,.45),
+        inset 1.5px 1.5px 1px -.5px rgba(255,255,255,.9),
+        inset -12px -14px 30px -12px rgba(212,165,116,.34),
+        inset 0 0 30px rgba(255,255,255,.10);
 }
-/* 不支持 backdrop-filter 的浏览器：回退到较实的半透明白底，保证可读 */
+/* 不支持 backdrop-filter 的浏览器：回退到更实的暖白底（v24 中段更透，实底相应更实），保证可读。
+   扫光/折射伪元素是纯渐变，不依赖 backdrop-filter，降级浏览器上动态光影照常工作 */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
     .invitation-card, .moment-frame, .rsvp-card, .venue-info-card, .sched-content, .btn-map {
-        background: linear-gradient(rgba(255,255,255,.86), rgba(255,255,255,.8)) padding-box, var(--glass-edge) border-box;
+        background: linear-gradient(rgba(255,253,250,.92), rgba(255,250,244,.86)) padding-box, var(--glass-edge) border-box;
     }
-    .nav.scrolled, .footer { background: rgba(255,255,255,.86); }
+    .nav.scrolled, .footer { background: rgba(255,253,250,.92); }
+}
+
+/* ============================================================
+   V24 REDUCED MOTION — 关闭呼吸/扫光过渡；--lit/--scroll-p 由 JS 停更，
+   光照回落到 CSS 兜底值（静态中段高光 + 固定光场），信息不丢失
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .site-bg::before, .site-bg::after, .scroll-line { animation: none; }
+    .invitation-card::before, .invitation-card::after,
+    .moment-frame::before, .moment-frame::after,
+    .rsvp-card::before, .rsvp-card::after,
+    .venue-info-card::before, .venue-info-card::after,
+    .sched-content::before, .sched-content::after { transition: none; }
+    .reveal { transition-duration: .01ms; }
 }
 
 /* ============================================================
    FOOTER
    ============================================================ */
-.footer { background: linear-gradient(to top, rgba(255,255,255,.4), rgba(255,255,255,.16)); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-top: 1px solid rgba(255,255,255,.55); box-shadow: 0 -1px 1px rgba(61,44,44,.03), 0 -14px 36px -14px rgba(61,44,44,.12), inset 0 1px 1px rgba(255,255,255,.6); padding: 70px 0; text-align: center; position: relative; z-index: 1; }
+.footer { background: linear-gradient(to top, rgba(255,255,255,.34), rgba(255,255,255,.12)); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-top: 1px solid rgba(255,255,255,.55); box-shadow: 0 -1px 1px rgba(61,44,44,.03), 0 -16px 36px -16px rgba(61,44,44,.14), inset 0 1px 1px rgba(255,255,255,.65), inset 0 -10px 20px -14px rgba(212,165,116,.18); padding: 70px 0; text-align: center; position: relative; z-index: 1; }
 .footer-names { font-family: var(--font-cn); font-size: 1.3rem; color: var(--brown); margin-bottom: 10px; }
 .footer-names span { color: var(--rose); margin: 0 6px; }
 .footer-date { font-family: var(--font-en); font-size: 1.1rem; color: var(--rose); letter-spacing: .08em; margin-bottom: 6px; }
@@ -259,7 +344,7 @@ ul { list-style: none; }
     .venue-guide-cartoon { flex: 0 0 auto; max-width: 180px; }
 }
 @media (max-width: 768px) {
-    .nav-links { position: fixed; top: 0; right: -100%; width: 260px; height: 100vh; flex-direction: column; justify-content: center; background: linear-gradient(to right, rgba(255,255,255,.5), rgba(255,255,255,.66)); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-left: 1px solid rgba(255,255,255,.6); box-shadow: -20px 0 50px -20px rgba(61,44,44,.2), inset 1px 0 1px rgba(255,255,255,.5); padding: 40px; gap: 24px; transition: right .4s; }
+    .nav-links { position: fixed; top: 0; right: -100%; width: 260px; height: 100vh; flex-direction: column; justify-content: center; background: linear-gradient(to right, rgba(255,255,255,.44), rgba(255,255,255,.58)); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-left: 1px solid rgba(255,255,255,.6); box-shadow: -20px 0 50px -20px rgba(61,44,44,.2), inset 1.5px 0 1px rgba(255,255,255,.6); padding: 40px; gap: 24px; transition: right .4s; }
     .nav-links.active { right: 0; }
     .nav-toggle { display: flex; }
     .hero { padding: calc(var(--nav-h) + 3vh) 20px calc(80px + 2vh); }
