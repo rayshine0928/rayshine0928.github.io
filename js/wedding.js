@@ -1,6 +1,9 @@
 /* ============================================================
-   0928.love — Wedding Site JS
-   Countdown + Parallax + Nav + Reveal
+   0928.love — Wedding Site JS（v26）
+   Countdown + Parallax + Reveal（错峰）+ Nav
+   光层相关（v24 --lit / v25 --scroll-p）已随「晴光极光」改版退役；
+   指针交互与粒子见 js/wedding-fx.js，锚点跳转（View Transitions
+   圆形揭示 + 平滑滚动兜底）也由 wedding-fx.js 统一接管。
    ============================================================ */
 (function() {
     'use strict';
@@ -39,7 +42,8 @@
     tick();
 
     /* ========================================================
-       PARALLAX SCROLLING
+       PARALLAX SCROLLING — 卡通插图（请柬侧图 / 场地指路）。
+       moment 相框的滚动视差已由 3D tilt 接管（v26），不再入列。
        ======================================================== */
     const parallaxEls = document.querySelectorAll('[data-parallax]');
     let raf;
@@ -58,74 +62,37 @@
         });
     }
 
-    /* ========================================================
-       V24 LIGHT FIELD — 滚动驱动光影（光源在左上，向右下照射）
-       --scroll-p → .site-bg 本元素（全局进度，驱动光晕/光束漂移；
-                    不写 :root，样式失效范围收缩到两个伪元素）
-       --lit      → 各玻璃卡（0=顶边抵视口底，1=底边出视口顶，
-                    驱动 ::after 扫光带与 ::before 折射暖斑）
-       量化步长（.005 / .025）+ 仅视口内更新，CSS 端 .3s linear
-       transition 把台阶抹成连续滑动（跑在合成器上）
-       ======================================================== */
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    /* --scroll-p 同写两个光层元素（不写 :root，失效范围各自收缩到本元素伪元素） */
-    const lightLayers = [document.querySelector('.site-bg'), document.querySelector('.sun-field')].filter(Boolean);
-    const litCards = document.querySelectorAll(
-        '.invitation-card, .moment-frame, .rsvp-card, .venue-info-card, .sched-content');
-    let lastP = -1;
-
-    function updateLightField() {
-        if (reduceMotion.matches) return;  /* 减弱动效：停更，CSS 兜底值 = 静态但完整的光照 */
-        const sy = window.pageYOffset, vh = window.innerHeight;
-
-        /* 全局进度（量化 0.005） */
-        const max = document.documentElement.scrollHeight - vh;
-        const p = max > 0 ? Math.min(1, Math.max(0, sy / max)) : 0;
-        const pq = Math.round(p * 200) / 200;
-        if (pq !== lastP) {
-            lightLayers.forEach(el => el.style.setProperty('--scroll-p', pq));
-            lastP = pq;
-        }
-
-        /* 逐卡光位：帧内读写分离 —— 先集中读 rect（本帧唯一一次强制布局，
-           不缓存 offsetTop：懒加载图片/字体 swap/reveal/parallax 都会让缓存漂移），
-           再集中写变量（写自定义属性不弄脏布局） */
-        const visible = [];
-        litCards.forEach(el => {
-            const r = el.getBoundingClientRect();
-            if (r.bottom > 0 && r.top < vh) visible.push([el, r]);
-        });
-        visible.forEach(([el, r]) => {
-            const lit = Math.min(1, Math.max(0, (vh - r.top) / (vh + r.height)));
-            const lq = Math.round(lit * 40) / 40;  /* 量化 0.025 */
-            if (el._lit !== lq) {
-                el.style.setProperty('--lit', lq);
-                el._lit = lq;
-            }
-        });
-    }
-
-    /* 减弱动效偏好中途切换：清除内联变量回落静态光照 / 恢复滚动驱动 */
-    reduceMotion.addEventListener('change', () => {
-        if (reduceMotion.matches) {
-            lightLayers.forEach(el => el.style.removeProperty('--scroll-p'));
-            litCards.forEach(el => { el.style.removeProperty('--lit'); el._lit = undefined; });
-        } else { lastP = -1; updateLightField(); }
-    });
-
     window.addEventListener('scroll', () => {
-        if (!raf) raf = requestAnimationFrame(() => { updateLightField(); updateParallax(); raf = null; });
+        if (!raf) raf = requestAnimationFrame(() => { updateParallax(); raf = null; });
     }, { passive: true });
-    updateLightField();
     updateParallax();
 
     /* ========================================================
-       SCROLL REVEAL (Intersection Observer)
+       SCROLL REVEAL — IntersectionObserver + 同节错峰
+       （LogosCaller 式 stagger：每节内第 n 个 .reveal 延迟 n*.08s，
+        延迟走 CSS 变量 --reveal-delay；减弱动效时不写延迟）
        ======================================================== */
-    const obs = new IntersectionObserver(entries => {
-        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    if ('IntersectionObserver' in window) {
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+        const counters = new WeakMap();
+        document.querySelectorAll('.reveal').forEach(el => {
+            const group = el.closest('section') || el.closest('.footer') || document.body;
+            const index = counters.get(group) || 0;
+            counters.set(group, index + 1);
+            if (!reduceMotion.matches) {
+                el.style.setProperty('--reveal-delay', (index * 0.08).toFixed(2) + 's');
+            }
+            obs.observe(el);
+        });
+    } else {
+        /* 无 IO 的老浏览器：直接全部显形，内容不丢 */
+        document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+    }
 
     /* ========================================================
        MOBILE NAV
@@ -157,18 +124,5 @@
     window.addEventListener('scroll', () => {
         nav.classList.toggle('scrolled', window.pageYOffset > 60);
     }, { passive: true });
-
-    /* ========================================================
-       SMOOTH ANCHOR SCROLL
-       ======================================================== */
-    document.querySelectorAll('a[href^="#"]').forEach(a => {
-        a.addEventListener('click', function(e) {
-            const t = document.querySelector(this.getAttribute('href'));
-            if (t) {
-                e.preventDefault();
-                window.scrollTo({ top: t.getBoundingClientRect().top + window.pageYOffset - 70, behavior: 'smooth' });
-            }
-        });
-    });
 
 })();

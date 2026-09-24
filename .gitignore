@@ -11,3 +11,6 @@ data/engagement_gen/api.env
 data/engagement_gen/results.json
 data/engagement_gen/batch_golden_hour_variants.py
 data/engagement_gen/generate_engagement_photos.py
+
+# 婚礼筹备资料（含姓名、住宿、电话等隐私信息）——不提交、不上线
+wedding-prep/

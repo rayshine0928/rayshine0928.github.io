@@ -14,10 +14,21 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="preload" as="image" href="{{ '/img/couple_portrait.webp' | relative_url }}" fetchpriority="high">
     <link rel="stylesheet" href="{{ '/css/wedding.css' | relative_url }}">
+    <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
     <!-- 固定婚纱照背景 — 铺满全页、不随内容滚动 -->
     <div class="site-bg" aria-hidden="true"></div>
+
+    <!-- 明亮水彩极光场 — 五团暖色光斑在照片与内容之间缓慢漂移，
+         被玻璃卡 backdrop-filter 折射 = 极光透过玻璃 -->
+    <div class="aurora-field" aria-hidden="true">
+        <div class="aurora-blob aurora-1"></div>
+        <div class="aurora-blob aurora-2"></div>
+        <div class="aurora-blob aurora-3"></div>
+        <div class="aurora-blob aurora-4"></div>
+        <div class="aurora-blob aurora-5"></div>
+    </div>
 
     <!-- Navigation -->
     <nav class="nav" id="nav">
@@ -38,9 +49,11 @@
 
     {{ content }}
 
-    <!-- 前景阳光层 — 固定在内容之上的体积光（光柱/光晕/浮尘/暗角），与 .site-bg 背景光构成分层 -->
-    <div class="sun-field" aria-hidden="true"></div>
-
+    <!-- v26 特效层：fx-core（共享 ticker/指针内核）→ wedding-fx（极光视差/
+         光标胶囊/金尘粒子/卡片追光/磁性按钮/导航滑囊/题词/圆形揭示）→
+         wedding（倒计时/视差/reveal/导航） -->
+    <script src="{{ '/js/fx-core.js' | relative_url }}"></script>
+    <script src="{{ '/js/wedding-fx.js' | relative_url }}"></script>
     <script src="{{ '/js/wedding.js' | relative_url }}"></script>
 </body>
 </html>

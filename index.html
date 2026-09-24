@@ -4,13 +4,17 @@ layout: wedding
 
 <!-- ==================== HERO — 文字作框，中央留给固定背景婚纱照 ==================== -->
 <section class="hero" id="hero">
-    <div class="hero-top reveal">
-        <p class="hero-eyebrow">We're Getting Married</p>
-        <p class="hero-eyebrow-cn">我们要结婚了</p>
+    <div class="hero-parallax" data-px-factor="0.75">
+        <div class="hero-top reveal">
+            <p class="hero-eyebrow">We're Getting Married</p>
+            <p class="hero-eyebrow-cn">我们要结婚了</p>
+        </div>
     </div>
-    <div class="hero-bottom reveal">
-        <p class="hero-date">2026 · 09 · 28</p>
-        <p class="hero-place">杭州 · 西湖 · 六通宾馆</p>
+    <div class="hero-parallax" data-px-factor="1.15">
+        <div class="hero-bottom reveal">
+            <p class="hero-date text-shimmer">2026 · 09 · 28</p>
+            <p class="hero-place">杭州 · 西湖 · 六通宾馆</p>
+        </div>
     </div>
     <div class="scroll-hint">
         <span>向下探索我们的故事</span>
@@ -22,7 +26,8 @@ layout: wedding
 <section class="invitation" id="invitation">
     <div class="container">
         <div class="invitation-layout">
-            <div class="invitation-card reveal">
+            <div class="invitation-card tilt-card reveal" data-tilt-max="5"
+                data-cursor-pill data-cursor-label="我们的请柬" data-cursor-icon="fa-solid fa-envelope-open-text">
                 <p class="invitation-pretext">Together with their families</p>
                 <h2 class="invitation-names">李笑然 <span>&</span> 严瑞</h2>
                 <p class="invitation-request">诚挚邀请您出席我们的草坪婚礼</p>
@@ -49,7 +54,9 @@ layout: wedding
     <div class="container">
         <h2 class="section-title reveal">园林 · 瞬间</h2>
         <p class="section-subtitle reveal">A Moment in the Garden</p>
-        <figure class="moment-frame reveal" data-parallax="0.9">
+        <figure class="moment-frame tilt-card reveal" data-tilt-max="4"
+            data-cursor-pill data-cursor-label="园林一瞬" data-cursor-icon="fa-regular fa-image"
+            data-cursor-preview="{{ '/img/garden_moment.webp' | relative_url }}">
             <div class="moment-photo">
                 <img src="{{ '/img/garden_moment.webp' | relative_url }}" alt="园林窗前的婚纱照" loading="lazy" decoding="async" width="1200" height="1600">
             </div>
@@ -58,7 +65,9 @@ layout: wedding
                 <p class="moment-en">Where the garden keeps our quiet vow</p>
             </figcaption>
         </figure>
-        <figure class="moment-frame moment-wide reveal" data-parallax="0.85">
+        <figure class="moment-frame moment-wide tilt-card reveal" data-tilt-max="4"
+            data-cursor-pill data-cursor-label="漏窗并肩" data-cursor-icon="fa-regular fa-image"
+            data-cursor-preview="{{ '/img/garden_stand.webp' | relative_url }}">
             <div class="moment-photo ratio-4x3">
                 <img src="{{ '/img/garden_stand.webp' | relative_url }}" alt="园林漏窗前并肩而立的婚纱照" loading="lazy" decoding="async" width="1600" height="1200">
             </div>
@@ -67,7 +76,9 @@ layout: wedding
                 <p class="moment-en">Side by side in the garden's frame</p>
             </figcaption>
         </figure>
-        <figure class="moment-frame moment-wide reveal" data-parallax="0.8">
+        <figure class="moment-frame moment-wide tilt-card reveal" data-tilt-max="4"
+            data-cursor-pill data-cursor-label="窗前轻吻" data-cursor-icon="fa-regular fa-image"
+            data-cursor-preview="{{ '/img/window_kiss.webp' | relative_url }}">
             <div class="moment-photo ratio-16x9">
                 <img src="{{ '/img/window_kiss.webp' | relative_url }}" alt="窗前俯身轻吻的婚纱照" loading="lazy" decoding="async" width="1600" height="899">
             </div>
@@ -89,22 +100,26 @@ layout: wedding
                 <h3>杭州 · 六通宾馆</h3>
                 <p>坐落于西湖核心景区三台山路<br>背倚青山，面朝西湖</p>
             </div>
-            <div class="venue-guide-cartoon" data-parallax="0.75">
+            <div class="venue-guide-cartoon" data-parallax="0.75"
+                data-cursor-pill data-cursor-label="噜噜噜妹指路" data-cursor-icon="fa-solid fa-compass">
                 <img src="{{ '/img/cartoon_guide.png' | relative_url }}" alt="噜噜噜妹指路">
             </div>
         </div>
         <div class="venue-photos reveal">
-            <div class="venue-photo"><img src="{{ '/img/六通宾馆正门图.jpg' | relative_url }}" alt="正门"><span>酒店正门</span></div>
-            <div class="venue-photo"><img src="{{ '/img/六通宾馆西湖鸟瞰图.jpg' | relative_url }}" alt="西湖"><span>西湖鸟瞰</span></div>
+            <div class="venue-photo" data-cursor-pill data-cursor-label="酒店正门" data-cursor-icon="fa-regular fa-image"
+                data-cursor-preview="{{ '/img/六通宾馆正门图.jpg' | relative_url }}"><img src="{{ '/img/六通宾馆正门图.jpg' | relative_url }}" alt="正门"><span>酒店正门</span></div>
+            <div class="venue-photo" data-cursor-pill data-cursor-label="西湖鸟瞰" data-cursor-icon="fa-regular fa-image"
+                data-cursor-preview="{{ '/img/六通宾馆西湖鸟瞰图.jpg' | relative_url }}"><img src="{{ '/img/六通宾馆西湖鸟瞰图.jpg' | relative_url }}" alt="西湖"><span>西湖鸟瞰</span></div>
         </div>
         <div class="venue-info-grid reveal">
-            <div class="venue-info-card"><i class="fas fa-map-marker-alt"></i><h4>地址</h4><p>杭州市西湖区三台山路149号</p></div>
-            <div class="venue-info-card"><i class="fas fa-car"></i><h4>停车</h4><p>酒店提供免费停车场</p></div>
-            <div class="venue-info-card"><i class="fas fa-subway"></i><h4>交通</h4><p>地铁1号线定安路站，打车约15分钟</p></div>
-            <div class="venue-info-card"><i class="fas fa-hotel"></i><h4>住宿</h4><p>酒店提供宾客优惠住宿</p></div>
+            <div class="venue-info-card tilt-card" data-tilt-max="8"><i class="fas fa-map-marker-alt"></i><h4>地址</h4><p>杭州市西湖区三台山路149号</p></div>
+            <div class="venue-info-card tilt-card" data-tilt-max="8"><i class="fas fa-car"></i><h4>停车</h4><p>酒店提供免费停车场</p></div>
+            <div class="venue-info-card tilt-card" data-tilt-max="8"><i class="fas fa-subway"></i><h4>交通</h4><p>地铁1号线定安路站，打车约15分钟</p></div>
+            <div class="venue-info-card tilt-card" data-tilt-max="8"><i class="fas fa-hotel"></i><h4>住宿</h4><p>酒店提供宾客优惠住宿</p></div>
         </div>
         <div class="venue-map-cta reveal">
-            <a href="https://uri.amap.com/marker?position=120.137,30.234&name=六通宾馆" target="_blank" class="btn-map">杭州西湖 · 三台山路149号 · 打开地图导航 <i class="fas fa-external-link-alt"></i></a>
+            <a href="https://uri.amap.com/marker?position=120.137,30.234&name=六通宾馆" target="_blank" class="btn-map"
+                data-cursor-pill data-cursor-label="打开地图导航" data-cursor-icon="fa-solid fa-location-arrow">杭州西湖 · 三台山路149号 · 打开地图导航 <i class="fas fa-external-link-alt"></i></a>
         </div>
     </div>
 </section>
@@ -128,9 +143,9 @@ layout: wedding
     <div class="container">
         <h2 class="section-title reveal">出席回执</h2>
         <p class="section-subtitle reveal">RSVP</p>
-        <div class="rsvp-card reveal">
+        <div class="rsvp-card tilt-card reveal" data-tilt-max="5">
             <p class="rsvp-intro">您的出席将是我们最珍贵的礼物</p>
-            <div class="rsvp-qr">
+            <div class="rsvp-qr" data-cursor-pill data-cursor-label="扫码登记出席" data-cursor-icon="fa-solid fa-qrcode">
                 <img src="{{ '/img/rsvp_qr.png' | relative_url }}" alt="出席登记二维码" class="qr-img">
                 <p>打开手机扫一扫 · 登记出席</p>
             </div>
@@ -146,5 +161,6 @@ layout: wedding
         <p class="footer-venue">杭州 · 西湖 · 六通宾馆</p>
         <p class="footer-url">0928.love</p>
         <p class="footer-tagline">See you on September 28th</p>
+        <p class="inscription">愿有岁月可回首 · 且以深情共白头</p>
     </div>
 </footer>
